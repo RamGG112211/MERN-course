@@ -4,7 +4,7 @@
 
 ### File: selectors.html
 
-    ```bash
+```bash
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -19,4 +19,4 @@
             <p class="text-blue-500">This is another paragraph.</p>
         </body>
         </html>
-    ```
+```
