@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .animate-slide-down {
+    animation: slide-down 0.3s ease forwards;
+  }
+
+  @keyframes slide-down {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+.padding {
+  @apply px-6 sm:px-8 md:px-10 lg:px-12 xl:px-14 2xl:px-16;
+}

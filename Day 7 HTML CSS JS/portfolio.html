@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio Website</title>
+    <!-- <link href="./portfolio.css" rel="stylesheet" /> -->
+    <link href="/dist/output.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100">
+    <header
+      class="sticky z-50 top-0 left-0 py-3 flex justify-between items-center gap-2 padding header"
+      id="header"
+    >
+      <span class="text-xl font-bold text-orange-400">Your Logo</span>
+
+      <!-- Hamburger Icon -->
+      <button id="menu-btn" class="text-3xl lg:hidden focus:outline-none">
+        <!-- React Icons placeholder (in JS, you'll use the actual React icon) -->
+        <i class="menu-icon">☰</i>
+      </button>
+
+      <!-- Menu (hidden on small screens) -->
+      <div
+        class="absolute lg:static w-full lg:w-max xl:w-[81.5%] top-full left-0 px-6 sm:px-8 md:px-12 lg:pb-0 lg:px-0 bg-white lg:bg-transparent grid shadow-md lg:shadow-none"
+        id="menu-container"
+      >
+        <div class="overflow-hidden lg:flex gap-2 xl:justify-end">
+          <ul
+            id="menu"
+            class="lg:flex divide-y-[4px] lg:divide-none divide-transparent gap-1 items-center text-black"
+          >
+            <li class="menu-item p-2"><a href="#hero">Home</a></li>
+            <li class="menu-item p-2">
+              <a href="#portfolio">Portfolio</a>
+            </li>
+            <li class="menu-item p-2"><a href="#about">About</a></li>
+            <li class="menu-item p-2">
+              <a href="#testimonial">Testimonial</a>
+            </li>
+            <li class="menu-item p-2">
+              <a href="#contact">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Sections -->
+    <section
+      id="hero"
+      class="h-screen bg-gray-100 flex items-center justify-center"
+    >
+      Home Section
+    </section>
+    <section
+      id="portfolio"
+      class="h-screen bg-gray-200 flex items-center justify-center"
+    >
+      Portfolio Section
+    </section>
+    <section
+      id="about"
+      class="h-screen bg-gray-300 flex items-center justify-center"
+    >
+      About Section
+    </section>
+    <section
+      id="testimonial"
+      class="h-screen bg-gray-400 flex items-center justify-center"
+    >
+      Testimonial Section
+    </section>
+    <section
+      id="contact"
+      class="h-screen bg-gray-500 flex items-center justify-center"
+    >
+      Contact Section
+    </section>
+
+    <script src="./portfolio.js"></script>
+  </body>
+</html>
