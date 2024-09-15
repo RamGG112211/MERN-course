@@ -488,3 +488,436 @@ Example of Nested Routes:
         export default App;
 
 ```
+
+# React Router
+
+React Router is a library that helps in adding client-side routing to React applications. It enables navigation between different components or views, mimicking the behavior of a multi-page application while staying within a single-page app (SPA).
+
+React Router primarily provides:
+
+- Routing: Defining different routes for your application.
+- Linking: Navigating between different components without page reloads.
+- Nested Routes: Creating sub-routes or child routes.
+
+## 1. Client-side Routing
+
+Client-side routing means that the routing (deciding which page/component to render based on the URL) is handled within the browser using JavaScript. React Router allows you to set up routes for different components based on the URL path.
+
+- First, install the React Router library:
+
+```bash
+        npm install react-router-dom
+```
+
+- Then, set up the router in your App.js:
+
+```bash
+        import React from 'react';
+        import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+
+        // Components for different routes
+        function Home() {
+        return <h2>Home Page</h2>;
+        }
+
+        function About() {
+        return <h2>About Page</h2>;
+        }
+
+        function Contact() {
+        return <h2>Contact Page</h2>;
+        }
+
+        function App() {
+        return (
+            <Router>
+            <nav>
+                <ul>
+                <li><Link to="/">Home</Link></li>
+                <li><Link to="/about">About</Link></li>
+                <li><Link to="/contact">Contact</Link></li>
+                </ul>
+            </nav>
+
+            {/* Define routes */}
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+            </Routes>
+            </Router>
+        );
+        }
+
+        export default App;
+```
+
+#### Setting up React Router
+
+```bash
+        import React, { useState } from 'react';
+
+        function App() {
+        const [message, setMessage] = useState('Hello! Click the button.');
+
+        // Event handler function
+        const handleClick = () => {
+            setMessage('Button clicked! Message updated.');
+        };
+
+        return (
+            <div>
+            <h1>{message}</h1>
+            {/* Handling an event using onClick */}
+            <button onClick={handleClick}>Click Me</button>
+            </div>
+        );
+        }
+
+        export default App;
+
+```
+
+## 2. Nested Routes
+
+React Router also supports nested routes, which means you can have routes inside other routes. This is useful for creating layouts like dashboards, where the layout is shared, but the content changes based on the route.
+
+Example of Nested Routes:
+
+```bash
+        import React from 'react';
+        import { BrowserRouter as Router, Routes, Route, Link, Outlet } from 'react-router-dom';
+
+        // Parent component with nested routes
+        function Dashboard() {
+        return (
+            <div>
+            <h2>Dashboard</h2>
+            <nav>
+                <ul>
+                <li><Link to="overview">Overview</Link></li>
+                <li><Link to="settings">Settings</Link></li>
+                </ul>
+            </nav>
+            {/* Outlet renders the child routes */}
+            <Outlet />
+            </div>
+        );
+        }
+
+        // Child components
+        function Overview() {
+        return <h3>Overview Section</h3>;
+        }
+
+        function Settings() {
+        return <h3>Settings Section</h3>;
+        }
+
+        function App() {
+        return (
+            <Router>
+            <nav>
+                <ul>
+                <li><Link to="/">Home</Link></li>
+                <li><Link to="/dashboard">Dashboard</Link></li>
+                </ul>
+            </nav>
+
+            <Routes>
+                <Route path="/" element={<h2>Home Page</h2>} />
+                {/* Parent Route */}
+                <Route path="dashboard" element={<Dashboard />}>
+                {/* Nested Routes */}
+                <Route path="overview" element={<Overview />} />
+                <Route path="settings" element={<Settings />} />
+                </Route>
+            </Routes>
+            </Router>
+        );
+        }
+
+        export default App;
+
+```
+
+# Hooks
+
+Hooks are functions that let you “hook into” React state and lifecycle features from function components. Hooks don’t work inside classes — they let you use React without classes.
+
+React provides a few built-in Hooks like useState. You can also create your own Hooks to reuse stateful behavior between different components. We’ll look at the built-in Hooks first.
+
+## 1. useState, useEffect
+
+- The useState hook is used to declare and manage state in functional components. In a doctor appointment website, we might want to store the details of a doctor, such as their availability status.
+
+Example: Managing doctor availability
+
+```bash
+        import React, { useState } from 'react';
+
+        const DoctorAvailability = () => {
+        const [isAvailable, setIsAvailable] = useState(true);
+
+        const toggleAvailability = () => {
+            setIsAvailable(prevState => !prevState);
+        };
+
+        return (
+            <div>
+            <h3>Doctor's Availability</h3>
+            <p>The doctor is currently: {isAvailable ? "Available" : "Unavailable"}</p>
+            <button onClick={toggleAvailability}>
+                {isAvailable ? "Mark Unavailable" : "Mark Available"}
+            </button>
+            </div>
+        );
+        };
+
+        export default DoctorAvailability;
+
+```
+
+- The useEffect hook allows you to perform side effects like fetching data, subscribing to events, or updating the DOM. In our doctor portal, we can use it to fetch appointment details when a component loads.
+
+Example: Fetching doctor appointments
+
+```bash
+       import React, { useState, useEffect } from 'react';
+
+        const Appointments = () => {
+        const [appointments, setAppointments] = useState([]);
+
+        useEffect(() => {
+            // Simulate fetching appointment data from an API
+            fetch("/api/appointments")
+            .then(res => res.json())
+            .then(data => setAppointments(data));
+        }, []); // Empty dependency array to run on mount only
+
+        return (
+            <div>
+            <h3>Doctor's Appointments</h3>
+            <ul>
+                {appointments.map(appointment => (
+                <li key={appointment.id}>
+                    {appointment.patientName} - {appointment.date}
+                </li>
+                ))}
+            </ul>
+            </div>
+        );
+        };
+
+        export default Appointments;
+
+```
+
+## 2. customHook
+
+Custom hooks allow you to extract and reuse logic across components. For example, we might want a custom hook to handle the fetching of doctor details.
+
+Example: Custom hook to fetch doctor details
+
+```bash
+        import { useState, useEffect } from 'react';
+
+        const useDoctorDetails = (doctorId) => {
+        const [doctor, setDoctor] = useState(null);
+
+        useEffect(() => {
+            fetch(`/api/doctors/${doctorId}`)
+            .then(res => res.json())
+            .then(data => setDoctor(data));
+        }, [doctorId]);
+
+        return doctor;
+        };
+
+        export default useDoctorDetails;
+
+
+```
+
+#### Using the custom hook in a component:
+
+```bash
+        import React from 'react';
+        import useDoctorDetails from './useDoctorDetails';
+
+        const DoctorProfile = ({ doctorId }) => {
+        const doctor = useDoctorDetails(doctorId);
+
+        if (!doctor) return <p>Loading...</p>;
+
+        return (
+            <div>
+            <h2>{doctor.name}</h2>
+            <p>Specialty: {doctor.specialty}</p>
+            <p>Experience: {doctor.experience} years</p>
+            </div>
+        );
+        };
+
+        export default DoctorProfile;
+```
+
+# State Management
+
+## 1. Context API
+The Context API is used for global state management in React. It helps avoid "prop drilling" by making data accessible to all components without passing it down explicitly through props.
+
+Example: Context for user authentication
+
+```bash
+        import React, { createContext, useContext, useState } from 'react';
+
+        // Create a context
+        const AuthContext = createContext();
+
+        // AuthProvider component that wraps around your app
+        export const AuthProvider = ({ children }) => {
+        const [user, setUser] = useState(null);
+
+        const login = (userData) => setUser(userData);
+        const logout = () => setUser(null);
+
+        return (
+            <AuthContext.Provider value={{ user, login, logout }}>
+            {children}
+            </AuthContext.Provider>
+        );
+        };
+
+        // Custom hook to use AuthContext
+        export const useAuth = () => {
+        return useContext(AuthContext);
+        };
+
+        // Example component using the context
+        const UserProfile = () => {
+        const { user, logout } = useAuth();
+
+        if (!user) return <p>Please log in.</p>;
+
+        return (
+            <div>
+            <h3>Welcome, {user.name}</h3>
+            <button onClick={logout}>Logout</button>
+            </div>
+        );
+        };
+
+        export default UserProfile;
+```
+## 2. Redux Basics
+Redux is a state management library that helps manage application state using actions, reducers, and a central store. In our doctor portal, we could use Redux to manage appointments globally.
+
+Example: Redux to manage appointments
+- Action Types
+```bash
+    // actions/types.js
+    export const ADD_APPOINTMENT = 'ADD_APPOINTMENT';
+    export const REMOVE_APPOINTMENT = 'REMOVE_APPOINTMENT';
+```
+- Actions
+```bash
+    // actions/appointmentActions.js
+    import { ADD_APPOINTMENT, REMOVE_APPOINTMENT } from './types';
+
+    export const addAppointment = (appointment) => ({
+    type: ADD_APPOINTMENT,
+    payload: appointment,
+    });
+
+    export const removeAppointment = (id) => ({
+    type: REMOVE_APPOINTMENT,
+    payload: id,
+    });
+
+```
+
+- Reducer
+```bash
+    // reducers/appointmentReducer.js
+    import { ADD_APPOINTMENT, REMOVE_APPOINTMENT } from '../actions/types';
+
+    const initialState = {
+    appointments: []
+    };
+
+    export const appointmentReducer = (state = initialState, action) => {
+    switch (action.type) {
+        case ADD_APPOINTMENT:
+        return {
+            ...state,
+            appointments: [...state.appointments, action.payload],
+        };
+        case REMOVE_APPOINTMENT:
+        return {
+            ...state,
+            appointments: state.appointments.filter(apt => apt.id !== action.payload),
+        };
+        default:
+        return state;
+    }
+    };
+
+```
+
+- Store
+```bash
+    // store.js
+    import { createStore, combineReducers } from 'redux';
+    import { appointmentReducer } from './reducers/appointmentReducer';
+
+    const rootReducer = combineReducers({
+    appointments: appointmentReducer,
+    });
+
+    const store = createStore(rootReducer);
+
+    export default store;
+
+```
+
+- using redux in component
+```bash
+    import React from 'react';
+    import { useSelector, useDispatch } from 'react-redux';
+    import { addAppointment, removeAppointment } from './actions/appointmentActions';
+
+    const AppointmentManager = () => {
+    const appointments = useSelector(state => state.appointments.appointments);
+    const dispatch = useDispatch();
+
+    const handleAddAppointment = () => {
+        const newAppointment = {
+        id: Date.now(),
+        patientName: "John Doe",
+        date: "2024-09-18",
+        };
+        dispatch(addAppointment(newAppointment));
+    };
+
+    return (
+        <div>
+        <h3>Doctor's Appointments</h3>
+        <button onClick={handleAddAppointment}>Add Appointment</button>
+        <ul>
+            {appointments.map((appointment) => (
+            <li key={appointment.id}>
+                {appointment.patientName} - {appointment.date}
+                <button onClick={() => dispatch(removeAppointment(appointment.id))}>
+                Cancel
+                </button>
+            </li>
+            ))}
+        </ul>
+        </div>
+    );
+    };
+
+    export default AppointmentManager;
+
+```
