@@ -69,9 +69,9 @@ const DoctorsCarousel = () => {
   }, []);
 
   return (
-    <div className=" mx-12 py-8 pb-20">
-      <div className=" mx-auto flex flex-col gap-5 2xl:gap-10 sm:px-4 py-6 bg-Background">
-        <div className="flex sm:flex-row flex-col items-center justify-between m-4 ">
+    <div className=" py-8 pb-20 padding">
+      <div className=" mx-auto flex flex-col gap-5 2xl:gap-10 py-6 bg-Background">
+        <div className="flex sm:flex-row flex-col items-center justify-between ">
           <p className="font-bold sm:text-2xl text-xl  text-primary">
             {" "}
             Doctors Nearby
@@ -90,7 +90,7 @@ const DoctorsCarousel = () => {
           <Loading />
         </div>
       ) : (
-        <Slider {...settings} className=" space-x-6">
+        <Slider {...settings} className="">
           {doctors.slice(0, 6).map((doctor) => {
             const { id } = doctor;
             return <DoctorCard key={id} doctor={doctor} />;
