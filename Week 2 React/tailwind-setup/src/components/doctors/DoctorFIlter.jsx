@@ -16,6 +16,7 @@ import { FaCity, FaUserDoctor } from "react-icons/fa6";
 import { FaHospitalSymbol } from "react-icons/fa";
 import { IoFilter } from "react-icons/io5";
 import {
+  doctors_data,
   filterCityOptions,
   filterHospitalOptions,
   filterSpecialityOptions,
@@ -40,6 +41,8 @@ export default function DoctorFilter({
 
   const filterCity = useCallback(
     (val) => {
+      console.log("called city change");
+
       dispatch(updateCityChosen(val));
     },
     [dispatch]
@@ -76,6 +79,7 @@ export default function DoctorFilter({
       categoryValues: filterCityOptions,
       filterFn: filterCity,
       filterType: "select one",
+      categoryType: "city",
     },
     {
       id: 5,
@@ -85,6 +89,7 @@ export default function DoctorFilter({
       categoryValues: filterSpecialityOptions,
       filterFn: filterSpeciality,
       filterType: "select one",
+      categoryType: "speciality",
     },
     {
       id: 6,
@@ -94,12 +99,13 @@ export default function DoctorFilter({
       categoryValues: filterHospitalOptions,
       filterFn: filterHospital,
       filterType: "select one",
+      categoryType: "hospital",
     },
   ];
 
   const updateFilterDoctorOptions = useCallback(() => {
     let duplicateFilterDoctorOptions = { ...filterDoctorOptions };
-    let duplicateFilteredDoctors = [...filteredDoctors];
+    let duplicateFilteredDoctors = [...doctors_data];
 
     if (cityChosen && cityChosen !== "") {
       duplicateFilterDoctorOptions.city = cityChosen;
@@ -141,11 +147,8 @@ export default function DoctorFilter({
 
     dispatch(updateFilteredDoctors(duplicateFilteredDoctors));
     setFilterDoctorOptions(duplicateFilterDoctorOptions);
-    console.log("city chosen: ", cityChosen);
-    console.log("speciality: ", specialityChosen);
   }, [
     filterDoctorOptions,
-    filteredDoctors,
     cityChosen,
     specialityChosen,
     hospitalChosen,
@@ -160,6 +163,8 @@ export default function DoctorFilter({
 
   useEffect(() => {
     updateFilterDoctorOptions();
+    console.log("city chosen: ", cityChosen);
+    console.log("speciality: ", specialityChosen);
   }, [cityChosen, specialityChosen, hospitalChosen, sort, order]);
 
   if (!filteredDoctors) {
@@ -185,6 +190,7 @@ export default function DoctorFilter({
               categoryValue,
               categoryValues,
               filterFn,
+              categoryType,
             } = PageFilter;
 
             return (
@@ -194,6 +200,7 @@ export default function DoctorFilter({
                 updateCategoryValue={filterFn}
                 icon={icon}
                 key={id}
+                categoryType={categoryType}
                 className="w-full md:w-[calc(50%_-_8px)] lg:w-[calc((100%_/_3)_-_(32px_/_3))]"
               />
             );

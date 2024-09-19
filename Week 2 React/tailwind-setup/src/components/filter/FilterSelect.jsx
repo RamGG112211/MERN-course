@@ -10,7 +10,7 @@ import {
 } from "../../redux/actions/doctorFilterActions";
 import { FaCaretDown, FaCheck } from "react-icons/fa6";
 
-const FilterSelect = ({ options, icon, className, categoryType }) => {
+const FilterSelect = ({ options, icon, className, categoryType, }) => {
   const dispatch = useDispatch();
   const { cityChosen, hospitalChosen, specialityChosen } = useSelector(
     (state) => state.doctorFilter
