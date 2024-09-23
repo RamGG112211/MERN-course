@@ -151,11 +151,7 @@
         },
         clinicAddress: {
             type: String
-        },
-        hospital_ids: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Hospital'
-        }]
+        }
         }, { timestamps: true });
 
         module.exports = mongoose.model('Doctor', doctorSchema);
@@ -352,6 +348,474 @@
             res.status(401).json({ message: 'Invalid token' });
             }
         };
+        };
+
+```
+
+# User Controllers in controllers/users/index.js folder
+
+```bash
+       import User from '../models/users/index.js'; // Adjust the path based on your project structure
+        import bcrypt from 'bcryptjs';
+        import jwt from 'jsonwebtoken';
+
+        // Create a new user
+        export const createUser = async (req, res) => {
+        const { fullName, email, password } = req.body;
+
+        try {
+            // Check if user already exists
+            const existingUser = await User.findOne({ email });
+            if (existingUser) return res.status(400).json({ message: 'User already exists' });
+
+            // Hash the password
+            const hashedPassword = await bcrypt.hash(password, 12);
+
+            // Create new user
+            const newUser = new User({
+            fullName,
+            email,
+            password: hashedPassword,
+            role: 'User', // Default to 'User' role
+            });
+
+            await newUser.save();
+
+            res.status(201).json({ user: newUser });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Get all users
+        export const getUsers = async (req, res) => {
+        try {
+            const users = await User.find();
+            res.status(200).json(users);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Get user by ID
+        export const getUserById = async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            const user = await User.findById(id);
+            if (!user) return res.status(404).json({ message: 'User not found' });
+
+            res.status(200).json(user);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Update user (PUT - full update)
+        export const updateUser = async (req, res) => {
+        const { id } = req.params;
+        const { fullName, email, password, role } = req.body;
+
+        try {
+            // Find user by ID
+            let user = await User.findById(id);
+            if (!user) return res.status(404).json({ message: 'User not found' });
+
+            // Hash new password if it's provided
+            let hashedPassword = user.password;
+            if (password) {
+            hashedPassword = await bcrypt.hash(password, 12);
+            }
+
+            // Update user details
+            user = await User.findByIdAndUpdate(
+            id,
+            {
+                fullName,
+                email,
+                password: hashedPassword,
+                role,
+            },
+            { new: true }
+            );
+
+            res.status(200).json(user);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Patch user (PATCH - partial update)
+        export const patchUser = async (req, res) => {
+        const { id } = req.params;
+        const updates = req.body; // { fullName: 'new name', ... }
+
+        try {
+            // If password is included in the updates, hash it
+            if (updates.password) {
+            updates.password = await bcrypt.hash(updates.password, 12);
+            }
+
+            // Find user by ID and apply partial update
+            const updatedUser = await User.findByIdAndUpdate(id, updates, { new: true });
+
+            if (!updatedUser) return res.status(404).json({ message: 'User not found' });
+
+            res.status(200).json(updatedUser);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Delete user
+        export const deleteUser = async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            const deletedUser = await User.findByIdAndDelete(id);
+            if (!deletedUser) return res.status(404).json({ message: 'User not found' });
+
+            res.status(200).json({ message: 'User deleted successfully' });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+
+```
+
+# Doctor Controllers in controllers/doctors/index.js folder
+
+```bash
+        import Doctor from '../../models/doctors/index.js'; // Doctor model
+        import DoctorHospital from '../../models/doctorHospitals/index.js'; // DoctorHospital model
+        import Hospital from '../../models/hospitals/index.js'; // Hospital model
+
+        // Create a new Doctor and associate with hospitals
+        export const createDoctor = async (req, res) => {
+        const { user_id, specialization, qualification, experienceYears, clinicAddress, hospitalIds } = req.body;
+
+        try {
+            // Create doctor
+            const newDoctor = new Doctor({
+            user_id,
+            specialization,
+            qualification,
+            experienceYears,
+            clinicAddress
+            });
+            const savedDoctor = await newDoctor.save();
+
+            // Handle hospital associations
+            if (hospitalIds && hospitalIds.length > 0) {
+            const doctorHospitalAssociations = hospitalIds.map((hospitalId) => ({
+                doctor_id: savedDoctor._id,
+                hospital_id: hospitalId,
+            }));
+
+            await DoctorHospital.insertMany(doctorHospitalAssociations);
+            }
+
+            res.status(201).json({ message: 'Doctor created and associated with hospitals', doctor: savedDoctor });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Update a doctor and their hospital associations
+        export const updateDoctor = async (req, res) => {
+        const { id } = req.params;
+        const { specialization, qualification, experienceYears, clinicAddress, hospitalIds } = req.body;
+
+        try {
+            // Update doctor details
+            const updatedDoctor = await Doctor.findByIdAndUpdate(
+            id,
+            { specialization, qualification, experienceYears, clinicAddress },
+            { new: true }
+            );
+
+            if (!updatedDoctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+            }
+
+            // Update hospital associations
+            if (hospitalIds && hospitalIds.length > 0) {
+            // Remove old associations
+            await DoctorHospital.deleteMany({ doctor_id: id });
+
+            // Add new associations
+            const doctorHospitalAssociations = hospitalIds.map((hospitalId) => ({
+                doctor_id: id,
+                hospital_id: hospitalId,
+            }));
+            await DoctorHospital.insertMany(doctorHospitalAssociations);
+            }
+
+            res.status(200).json({ message: 'Doctor updated and hospital associations updated', doctor: updatedDoctor });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Delete a doctor and associated DoctorHospital relationships
+        export const deleteDoctor = async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            const deletedDoctor = await Doctor.findByIdAndDelete(id);
+
+            if (!deletedDoctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+            }
+
+            // Remove all associations with hospitals
+            await DoctorHospital.deleteMany({ doctor_id: id });
+
+            res.status(200).json({ message: 'Doctor and associated hospital relations deleted' });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Get a doctor and their associated hospitals
+        export const getDoctorWithHospitals = async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            const doctor = await Doctor.findById(id);
+            if (!doctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+            }
+
+            // Get associated hospitals
+            const hospitals = await DoctorHospital.find({ doctor_id: id }).populate('hospital_id');
+
+            res.status(200).json({ doctor, hospitals });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+
+```
+
+# Hospital Controllers in controllers/hospitals/index.js folder
+
+```bash
+       import Hospital from '../../models/hospitals/index.js'; // Hospital model
+        import DoctorHospital from '../../models/doctorHospitals/index.js'; // DoctorHospital model
+        import Doctor from '../../models/doctors/index.js'; // Doctor model
+
+        // Create a new Hospital and associate with doctors
+        export const createHospital = async (req, res) => {
+        const { user_id, hospitalName, location, departments, contactInfo, doctorIds } = req.body;
+
+        try {
+            // Create hospital
+            const newHospital = new Hospital({
+            user_id,
+            hospitalName,
+            location,
+            departments,
+            contactInfo
+            });
+            const savedHospital = await newHospital.save();
+
+            // Handle doctor associations
+            if (doctorIds && doctorIds.length > 0) {
+            const hospitalDoctorAssociations = doctorIds.map((doctorId) => ({
+                doctor_id: doctorId,
+                hospital_id: savedHospital._id,
+            }));
+
+            await DoctorHospital.insertMany(hospitalDoctorAssociations);
+            }
+
+            res.status(201).json({ message: 'Hospital created and associated with doctors', hospital: savedHospital });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Update a hospital and their doctor associations
+        export const updateHospital = async (req, res) => {
+        const { id } = req.params;
+        const { hospitalName, location, departments, contactInfo, doctorIds } = req.body;
+
+        try {
+            // Update hospital details
+            const updatedHospital = await Hospital.findByIdAndUpdate(
+            id,
+            { hospitalName, location, departments, contactInfo },
+            { new: true }
+            );
+
+            if (!updatedHospital) {
+            return res.status(404).json({ message: 'Hospital not found' });
+            }
+
+            // Update doctor associations
+            if (doctorIds && doctorIds.length > 0) {
+            // Remove old associations
+            await DoctorHospital.deleteMany({ hospital_id: id });
+
+            // Add new associations
+            const hospitalDoctorAssociations = doctorIds.map((doctorId) => ({
+                doctor_id: doctorId,
+                hospital_id: id,
+            }));
+            await DoctorHospital.insertMany(hospitalDoctorAssociations);
+            }
+
+            res.status(200).json({ message: 'Hospital updated and doctor associations updated', hospital: updatedHospital });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Delete a hospital and associated DoctorHospital relationships
+        export const deleteHospital = async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            const deletedHospital = await Hospital.findByIdAndDelete(id);
+
+            if (!deletedHospital) {
+            return res.status(404).json({ message: 'Hospital not found' });
+            }
+
+            // Remove all associations with doctors
+            await DoctorHospital.deleteMany({ hospital_id: id });
+
+            res.status(200).json({ message: 'Hospital and associated doctor relations deleted' });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Get a hospital and their associated doctors
+        export const getHospitalWithDoctors = async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            const hospital = await Hospital.findById(id);
+            if (!hospital) {
+            return res.status(404).json({ message: 'Hospital not found' });
+            }
+
+            // Get associated doctors
+            const doctors = await DoctorHospital.find({ hospital_id: id }).populate('doctor_id');
+
+            res.status(200).json({ hospital, doctors });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+```
+
+# Bookings Controllers in controllers/bookings/index.js folder
+
+```bash
+        import Booking from '../../models/bookings/index.js'; // Booking model
+        import Doctor from '../../models/doctors/index.js'; // Doctor model
+        import User from '../../models/users/index.js'; // User model
+
+        // Create a new booking
+        export const createBooking = async (req, res) => {
+        const { user_id, doctor_id, appointmentDate } = req.body;
+
+        try {
+            // Check if the user and doctor exist
+            const user = await User.findById(user_id);
+            const doctor = await Doctor.findById(doctor_id);
+
+            if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+            }
+            if (!doctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+            }
+
+            // Create booking
+            const newBooking = new Booking({
+            user_id,
+            doctor_id,
+            appointmentDate
+            });
+            const savedBooking = await newBooking.save();
+
+            res.status(201).json({ message: 'Booking created', booking: savedBooking });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Update a booking
+        export const updateBooking = async (req, res) => {
+        const { id } = req.params;
+        const { appointmentDate, status } = req.body;
+
+        try {
+            const updatedBooking = await Booking.findByIdAndUpdate(
+            id,
+            { appointmentDate, status },
+            { new: true }
+            );
+
+            if (!updatedBooking) {
+            return res.status(404).json({ message: 'Booking not found' });
+            }
+
+            res.status(200).json({ message: 'Booking updated', booking: updatedBooking });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Delete a booking
+        export const deleteBooking = async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            const deletedBooking = await Booking.findByIdAndDelete(id);
+
+            if (!deletedBooking) {
+            return res.status(404).json({ message: 'Booking not found' });
+            }
+
+            res.status(200).json({ message: 'Booking deleted' });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Get a booking by ID
+        export const getBookingById = async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            const booking = await Booking.findById(id).populate('user_id').populate('doctor_id');
+
+            if (!booking) {
+            return res.status(404).json({ message: 'Booking not found' });
+            }
+
+            res.status(200).json({ booking });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
+        // Get all bookings
+        export const getAllBookings = async (req, res) => {
+        try {
+            const bookings = await Booking.find().populate('user_id').populate('doctor_id');
+            res.status(200).json({ bookings });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
         };
 
 ```
