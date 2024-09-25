@@ -484,6 +484,47 @@
 
 ```
 
+# User routes in routes/users/index.js folder
+
+```bash
+
+// routes/users/index.js
+
+        import express from 'express';
+        import {
+            createUser,
+            getUsers,
+            getUserById,
+            updateUser,
+            patchUser,
+            deleteUser
+        } from '../../controllers/users'; // Adjust the path based on your project structure
+
+        const router = express.Router();
+
+        // Create a new user
+        router.post('/', createUser);
+
+        // Get all users
+        router.get('/', getUsers);
+
+        // Get user by ID
+        router.get('/:id', getUserById);
+
+        // Update user (PUT - full update)
+        router.put('/:id', updateUser);
+
+        // Patch user (PATCH - partial update)
+        router.patch('/:id', patchUser);
+
+        // Delete user
+        router.delete('/:id', deleteUser);
+
+        export default router;
+
+
+```
+
 # Doctor Controllers in controllers/doctors/index.js folder
 
 ```bash
@@ -597,6 +638,37 @@
         }
         };
 
+
+```
+
+# Doctor routes in routes/doctors/index.js folder
+
+```bash
+       // routes/doctors/index.js
+
+        import express from 'express';
+        import {
+            createDoctor,
+            updateDoctor,
+            deleteDoctor,
+            getDoctorWithHospitals
+        } from '../../controllers/doctors/index.js'; // Adjust the path based on your project structure
+
+        const router = express.Router();
+
+        // Create a new doctor
+        router.post('/', createDoctor);
+
+        // Update a doctor
+        router.put('/:id', updateDoctor);
+
+        // Delete a doctor
+        router.delete('/:id', deleteDoctor);
+
+        // Get a doctor and their associated hospitals
+        router.get('/:id/hospitals', getDoctorWithHospitals);
+
+        export default router;
 
 ```
 
@@ -715,6 +787,38 @@
 
 ```
 
+# Hospital Routes in routes/hospitals/index.js folder
+
+```bash
+       // routes/hospitals/index.js
+
+        import express from 'express';
+        import {
+            createHospital,
+            updateHospital,
+            deleteHospital,
+            getHospitalWithDoctors
+        } from '../../controllers/hospitals/index.js'; // Adjust the path based on your project structure
+
+        const router = express.Router();
+
+        // Create a new hospital
+        router.post('/', createHospital);
+
+        // Update a hospital
+        router.put('/:id', updateHospital);
+
+        // Delete a hospital
+        router.delete('/:id', deleteHospital);
+
+        // Get a hospital and their associated doctors
+        router.get('/:id/doctors', getHospitalWithDoctors);
+
+        export default router;
+
+
+```
+
 # Bookings Controllers in controllers/bookings/index.js folder
 
 ```bash
@@ -817,5 +921,87 @@
             res.status(500).json({ message: error.message });
         }
         };
+
+```
+
+# Bookings routes in routes/bookings/index.js folder
+
+```bash
+       // routes/bookings/index.js
+
+        import express from 'express';
+        import {
+            createBooking,
+            updateBooking,
+            deleteBooking,
+            getBookingById,
+            getAllBookings
+        } from '../../controllers/bookings/index.js'; // Adjust the path as per your project structure
+
+        const router = express.Router();
+
+        // Create a new booking
+        router.post('/', createBooking);
+
+        // Update a booking
+        router.put('/:id', updateBooking);
+
+        // Delete a booking
+        router.delete('/:id', deleteBooking);
+
+        // Get a booking by ID
+        router.get('/:id', getBookingById);
+
+        // Get all bookings
+        router.get('/', getAllBookings);
+
+        export default router;
+
+
+```
+
+# Server.js
+
+```bash
+        import express from "express";
+        import userRoutes from "./routes/users/index.js";
+        import mongoose from "mongoose";
+        import dotenv from "dotenv";
+        // Import Routes
+        import userRoutes from "./routes/users/index.js"; // User routes
+        import hospitalRoutes from "./routes/hospitals/index.js"; // Hospital routes
+        import bookingRoutes from "./routes/bookings/index.js"; // Booking routes
+        import doctorRoutes from "./routes/doctors/index.js"; // Doctor routes
+        // Initialize dotenv
+        dotenv.config();
+
+        const app = express();
+        const port = process.env.PORT || 3000; // Use environment variable for PORT, fallback to 3001
+
+        // Connect to MongoDB
+        const connectDB = async () => {
+        try {
+            await mongoose.connect(process.env.MONGODB_URI);
+            console.log("MongoDB connected");
+        } catch (error) {
+            console.error("MongoDB connection failed:", error);
+            process.exit(1);
+        }
+        };
+
+        app.use(express.json()); // Middleware to parse JSON
+
+        // Define routes
+        app.use("/users", userRoutes); // User routes
+        app.use("/hospitals", hospitalRoutes); // Hospital routes
+        app.use("/bookings", bookingRoutes); // Booking routes
+        app.use("/doctors", doctorRoutes); // Doctor routes
+
+        // Start the server after DB connection
+        connectDB().then(() => {
+        app.listen(port, () => {
+            console.log(`Server is running on http://localhost:${port}`);
+        });
+        });
 
 ```
