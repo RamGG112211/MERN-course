@@ -506,19 +506,19 @@
         router.post('/', createUser);
 
         // Get all users
-        router.get('/', getUsers);
+        router.get('/', authMiddleware(['Admin']), getUsers);
 
         // Get user by ID
-        router.get('/:id', getUserById);
+        router.get('/:id', authMiddleware(['Admin', 'Doctor', 'User', 'Hospital']), getUserById);
 
         // Update user (PUT - full update)
-        router.put('/:id', updateUser);
+        router.put('/:id', authMiddleware(['Admin', 'Doctor', 'User', 'Hospital']), updateUser);
 
         // Patch user (PATCH - partial update)
-        router.patch('/:id', patchUser);
+        router.patch('/:id', authMiddleware(['Admin', 'Doctor', 'User', 'Hospital']), patchUser);
 
         // Delete user
-        router.delete('/:id', deleteUser);
+        router.delete('/:id', authMiddleware(['Admin', 'Doctor', 'User', 'Hospital']), deleteUser);
 
         export default router;
 
@@ -660,10 +660,10 @@
         router.post('/', createDoctor);
 
         // Update a doctor
-        router.put('/:id', updateDoctor);
+        router.put('/:id', authMiddleware(['Admin', 'Doctor']), updateDoctor);
 
         // Delete a doctor
-        router.delete('/:id', deleteDoctor);
+        router.delete('/:id', authMiddleware(['Admin', 'Doctor']), deleteDoctor);
 
         // Get a doctor and their associated hospitals
         router.get('/:id/hospitals', getDoctorWithHospitals);
@@ -806,10 +806,10 @@
         router.post('/', createHospital);
 
         // Update a hospital
-        router.put('/:id', updateHospital);
+        router.put('/:id', authMiddleware(['Admin', 'Hospital']), updateHospital);
 
         // Delete a hospital
-        router.delete('/:id', deleteHospital);
+        router.delete('/:id', authMiddleware(['Admin', 'Hospital']),  deleteHospital);
 
         // Get a hospital and their associated doctors
         router.get('/:id/doctors', getHospitalWithDoctors);
@@ -941,19 +941,19 @@
         const router = express.Router();
 
         // Create a new booking
-        router.post('/', createBooking);
+        router.post('/', authMiddleware(['Admin', 'User', 'Doctor']), createBooking);
 
         // Update a booking
-        router.put('/:id', updateBooking);
+        router.put('/:id', authMiddleware(['Admin', 'Doctor', 'User']), updateBooking);
 
         // Delete a booking
-        router.delete('/:id', deleteBooking);
+        router.delete('/:id', authMiddleware(['Admin', 'Doctor']), deleteBooking);
 
         // Get a booking by ID
         router.get('/:id', getBookingById);
 
         // Get all bookings
-        router.get('/', getAllBookings);
+        router.get('/', authMiddleware(['Admin', 'Doctor']),  getAllBookings);
 
         export default router;
 
