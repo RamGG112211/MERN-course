@@ -295,7 +295,7 @@
             if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
             const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            res.json({ token });
+            res.json({ token, user });
         } catch (err) {
             res.status(500).json({ message: err.message });
         }
@@ -964,7 +964,6 @@
 
 ```bash
         import express from "express";
-        import userRoutes from "./routes/users/index.js";
         import mongoose from "mongoose";
         import dotenv from "dotenv";
         // Import Routes
@@ -972,11 +971,16 @@
         import hospitalRoutes from "./routes/hospitals/index.js"; // Hospital routes
         import bookingRoutes from "./routes/bookings/index.js"; // Booking routes
         import doctorRoutes from "./routes/doctors/index.js"; // Doctor routes
+        import cors from "cors";
+
         // Initialize dotenv
         dotenv.config();
 
+        // Enable CORS for all routes
+
         const app = express();
-        const port = process.env.PORT || 3000; // Use environment variable for PORT, fallback to 3001
+        const port = process.env.PORT || 3001; // Use environment variable for PORT, fallback to 3001
+        app.use(cors());
 
         // Connect to MongoDB
         const connectDB = async () => {
@@ -1003,5 +1007,6 @@
             console.log(`Server is running on http://localhost:${port}`);
         });
         });
+
 
 ```

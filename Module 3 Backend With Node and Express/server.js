@@ -1,5 +1,4 @@
 import express from "express";
-import userRoutes from "./routes/users/index.js";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 // Import Routes
@@ -7,11 +6,16 @@ import userRoutes from "./routes/users/index.js"; // User routes
 import hospitalRoutes from "./routes/hospitals/index.js"; // Hospital routes
 import bookingRoutes from "./routes/bookings/index.js"; // Booking routes
 import doctorRoutes from "./routes/doctors/index.js"; // Doctor routes
+import cors from "cors";
+
 // Initialize dotenv
 dotenv.config();
 
+// Enable CORS for all routes
+
 const app = express();
-const port = process.env.PORT || 3000; // Use environment variable for PORT, fallback to 3001
+const port = process.env.PORT || 3001; // Use environment variable for PORT, fallback to 3001
+app.use(cors());
 
 // Connect to MongoDB
 const connectDB = async () => {
