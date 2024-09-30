@@ -1,4 +1,3 @@
-// src/utils/auth/apiRequest.js
 import axios from "axios";
 
 const API_BASE_URL = "http://localhost:3001"; // Replace with your API base URL
@@ -8,6 +7,7 @@ export const apiRequest = async ({
   url,
   data = null,
   params = null,
+  token = null, // Token passed from the frontend
 }) => {
   try {
     const response = await axios({
@@ -15,6 +15,7 @@ export const apiRequest = async ({
       url: `${API_BASE_URL}${url}`, // API endpoint
       data, // Data for POST, PUT, PATCH
       params, // Query params for GET requests
+      headers: token ? { authorization: `Bearer ${token}` } : {}, // Add the token if it exists
     });
     return response.data;
   } catch (error) {

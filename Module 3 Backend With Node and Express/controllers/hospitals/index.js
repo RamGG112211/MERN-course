@@ -1,11 +1,14 @@
 import Hospital from "../../models/hospitals/index.js"; // Hospital model
 import DoctorHospital from "../../models/doctorHospitals/index.js"; // DoctorHospital model
 import Doctor from "../../models/doctors/index.js"; // Doctor model
+import User from "../../models/users/index.js";
 
 // Create a new Hospital and associate with doctors
 export const createHospital = async (req, res) => {
   const {
-    user_id,
+    fullName,
+    email,
+    password,
     hospitalName,
     location,
     departments,
@@ -14,14 +17,24 @@ export const createHospital = async (req, res) => {
   } = req.body;
 
   try {
-    // Create hospital
+    // Create user
+    const newUser = new User({
+      fullName,
+      email,
+      password, // Make sure to hash the password before saving it
+    });
+
+    const savedUser = await newUser.save();
+
+    // Create hospital with the newly created user's ID
     const newHospital = new Hospital({
-      user_id,
+      user_id: savedUser._id, // Use the ID of the created user
       hospitalName,
       location,
       departments,
       contactInfo,
     });
+
     const savedHospital = await newHospital.save();
 
     // Handle doctor associations
@@ -34,12 +47,10 @@ export const createHospital = async (req, res) => {
       await DoctorHospital.insertMany(hospitalDoctorAssociations);
     }
 
-    res
-      .status(201)
-      .json({
-        message: "Hospital created and associated with doctors",
-        hospital: savedHospital,
-      });
+    res.status(201).json({
+      message: "Hospital created and associated with doctors",
+      hospital: savedHospital,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -76,12 +87,10 @@ export const updateHospital = async (req, res) => {
       await DoctorHospital.insertMany(hospitalDoctorAssociations);
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Hospital updated and doctor associations updated",
-        hospital: updatedHospital,
-      });
+    res.status(200).json({
+      message: "Hospital updated and doctor associations updated",
+      hospital: updatedHospital,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -125,6 +134,16 @@ export const getHospitalWithDoctors = async (req, res) => {
     );
 
     res.status(200).json({ hospital, doctors });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get all hospitals
+export const getHospitals = async (req, res) => {
+  try {
+    const hospitals = await Hospital.find();
+    res.status(200).json(hospitals);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

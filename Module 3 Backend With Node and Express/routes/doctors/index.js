@@ -6,6 +6,7 @@ import {
   updateDoctor,
   deleteDoctor,
   getDoctorWithHospitals,
+  getDoctors,
 } from "../../controllers/doctors/index.js"; // Adjust the path based on your project structure
 import { authMiddleware } from "../../middlewares/auth/index.js";
 
@@ -22,5 +23,7 @@ router.delete("/:id", authMiddleware(["Admin", "Doctor"]), deleteDoctor);
 
 // Get a doctor and their associated hospitals
 router.get("/:id/hospitals", getDoctorWithHospitals);
+
+router.get("/", getDoctors);
 
 export default router;

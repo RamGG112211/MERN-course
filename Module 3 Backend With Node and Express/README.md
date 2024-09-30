@@ -532,36 +532,43 @@
         import DoctorHospital from '../../models/doctorHospitals/index.js'; // DoctorHospital model
         import Hospital from '../../models/hospitals/index.js'; // Hospital model
 
-        // Create a new Doctor and associate with hospitals
         export const createDoctor = async (req, res) => {
-        const { user_id, specialization, qualification, experienceYears, clinicAddress, hospitalIds } = req.body;
+        const { fullName, email, password, specialization, qualification, experienceYears, clinicAddress, hospitalIds } = req.body;
 
         try {
-            // Create doctor
+            // Create user
+            const newUser = new User({
+                fullName,
+                email,
+                password // Make sure to hash the password before saving in a real application
+            });
+            const savedUser = await newUser.save();
+
+            // Create doctor using the new user's _id as user_id
             const newDoctor = new Doctor({
-            user_id,
-            specialization,
-            qualification,
-            experienceYears,
-            clinicAddress
+                user_id: savedUser._id,
+                specialization,
+                qualification,
+                experienceYears,
+                clinicAddress
             });
             const savedDoctor = await newDoctor.save();
 
             // Handle hospital associations
             if (hospitalIds && hospitalIds.length > 0) {
-            const doctorHospitalAssociations = hospitalIds.map((hospitalId) => ({
-                doctor_id: savedDoctor._id,
-                hospital_id: hospitalId,
-            }));
+                const doctorHospitalAssociations = hospitalIds.map((hospitalId) => ({
+                    doctor_id: savedDoctor._id,
+                    hospital_id: hospitalId,
+                }));
 
-            await DoctorHospital.insertMany(doctorHospitalAssociations);
+                await DoctorHospital.insertMany(doctorHospitalAssociations);
             }
 
             res.status(201).json({ message: 'Doctor created and associated with hospitals', doctor: savedDoctor });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
-        };
+    };
 
         // Update a doctor and their hospital associations
         export const updateDoctor = async (req, res) => {
@@ -639,6 +646,16 @@
         };
 
 
+        // Get all doctors
+        export const getDoctors = async (req, res) => {
+        try {
+            const doctors = await Doctor.find();
+            res.status(200).json(doctors);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
 ```
 
 # Doctor routes in routes/doctors/index.js folder
@@ -668,6 +685,9 @@
         // Get a doctor and their associated hospitals
         router.get('/:id/hospitals', getDoctorWithHospitals);
 
+        router.get("/", getDoctors);
+
+
         export default router;
 
 ```
@@ -681,17 +701,36 @@
 
         // Create a new Hospital and associate with doctors
         export const createHospital = async (req, res) => {
-        const { user_id, hospitalName, location, departments, contactInfo, doctorIds } = req.body;
-
-        try {
-            // Create hospital
-            const newHospital = new Hospital({
-            user_id,
+        const {
+            fullName,
+            email,
+            password,
             hospitalName,
             location,
             departments,
-            contactInfo
+            contactInfo,
+            doctorIds,
+        } = req.body;
+
+        try {
+            // Create user
+            const newUser = new User({
+            fullName,
+            email,
+            password, // Make sure to hash the password before saving it
             });
+
+            const savedUser = await newUser.save();
+
+            // Create hospital with the newly created user's ID
+            const newHospital = new Hospital({
+            user_id: savedUser._id, // Use the ID of the created user
+            hospitalName,
+            location,
+            departments,
+            contactInfo,
+            });
+
             const savedHospital = await newHospital.save();
 
             // Handle doctor associations
@@ -704,7 +743,10 @@
             await DoctorHospital.insertMany(hospitalDoctorAssociations);
             }
 
-            res.status(201).json({ message: 'Hospital created and associated with doctors', hospital: savedHospital });
+            res.status(201).json({
+            message: "Hospital created and associated with doctors",
+            hospital: savedHospital,
+            });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
@@ -785,6 +827,16 @@
         }
         };
 
+        // Get all hospitals
+        export const getHospitals = async (req, res) => {
+        try {
+            const hospitals = await Hospital.find();
+            res.status(200).json(hospitals);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        };
+
 ```
 
 # Hospital Routes in routes/hospitals/index.js folder
@@ -813,6 +865,9 @@
 
         // Get a hospital and their associated doctors
         router.get('/:id/doctors', getHospitalWithDoctors);
+
+        router.get("/", getHospitals);
+
 
         export default router;
 

@@ -1,11 +1,12 @@
 import Doctor from "../../models/doctors/index.js"; // Doctor model
 import DoctorHospital from "../../models/doctorHospitals/index.js"; // DoctorHospital model
 import Hospital from "../../models/hospitals/index.js"; // Hospital model
-
-// Create a new Doctor and associate with hospitals
+import User from "../../models/users/index.js";
 export const createDoctor = async (req, res) => {
   const {
-    user_id,
+    fullName,
+    email,
+    password,
     specialization,
     qualification,
     experienceYears,
@@ -14,9 +15,17 @@ export const createDoctor = async (req, res) => {
   } = req.body;
 
   try {
-    // Create doctor
+    // Create user
+    const newUser = new User({
+      fullName,
+      email,
+      password, // Make sure to hash the password before saving in a real application
+    });
+    const savedUser = await newUser.save();
+
+    // Create doctor using the new user's _id as user_id
     const newDoctor = new Doctor({
-      user_id,
+      user_id: savedUser._id,
       specialization,
       qualification,
       experienceYears,
@@ -34,12 +43,10 @@ export const createDoctor = async (req, res) => {
       await DoctorHospital.insertMany(doctorHospitalAssociations);
     }
 
-    res
-      .status(201)
-      .json({
-        message: "Doctor created and associated with hospitals",
-        doctor: savedDoctor,
-      });
+    res.status(201).json({
+      message: "Doctor created and associated with hospitals",
+      doctor: savedDoctor,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -81,12 +88,10 @@ export const updateDoctor = async (req, res) => {
       await DoctorHospital.insertMany(doctorHospitalAssociations);
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Doctor updated and hospital associations updated",
-        doctor: updatedDoctor,
-      });
+    res.status(200).json({
+      message: "Doctor updated and hospital associations updated",
+      doctor: updatedDoctor,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -130,6 +135,16 @@ export const getDoctorWithHospitals = async (req, res) => {
     );
 
     res.status(200).json({ doctor, hospitals });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get all doctors
+export const getDoctors = async (req, res) => {
+  try {
+    const doctors = await Doctor.find();
+    res.status(200).json(doctors);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
