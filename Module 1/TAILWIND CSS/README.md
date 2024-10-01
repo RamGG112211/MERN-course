@@ -1,4 +1,4 @@
-# Day 2 Tailwind CSS
+# module 1 Tailwind CSS
 
 ## 1. CSS Selectors
 

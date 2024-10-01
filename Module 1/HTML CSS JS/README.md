@@ -1,4 +1,4 @@
-# Day 5 JS
+# Module 1 HTML CSS JS COMBO
 
 ## 1. Variables and Data Types
 

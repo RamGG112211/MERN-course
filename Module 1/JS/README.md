@@ -1,4 +1,4 @@
-# Day 5 JS
+# Module 1 JS
 
 ## 1. Variables and Data Types
 
