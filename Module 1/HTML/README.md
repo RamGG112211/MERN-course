@@ -663,122 +663,111 @@ If the name attribute is omitted, the value of the input field will not be sent 
     </form>
 ```
 
-## 12. HTML is Not Case Sensitive
-
-HTML tags are not case sensitive: <P> means the same as <p>.
-
-The HTML standard does not require lowercase tags, but W3C recommends lowercase in HTML, and demands lowercase for stricter document types like XHTML.
+# Basic portfolio using HTML
 
 ```bash
     <!DOCTYPE html>
-    <html>
+    <html lang="en">
     <head>
-        <title>My First Webpage</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Portfolio</title>
     </head>
     <body>
-        <h1>Welcome to My Webpage</h1>
-        <p>This is a paragraph of text.</p>
-        <P>This is a paragraph of text.</P>
+
+        <!-- Header Section -->
+        <header>
+            <h1>My Portfolio</h1>
+            <p>Welcome to my portfolio website</p>
+        </header>
+
+        <!-- Navigation Section -->
+        <nav>
+            <ul>
+                <li><a href="#about">About Me</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#contact">Contact Me</a></li>
+            </ul>
+        </nav>
+
+        <!-- About Me Section -->
+        <section id="about">
+            <h2>About Me</h2>
+            <p>Hello! I'm a web developer with a passion for building websites and learning new technologies.</p>
+            <img src="profile.jpg" alt="Profile Picture" width="200">
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects">
+            <h2>Projects</h2>
+            <table>
+                <tr>
+                    <th>Project Name</th>
+                    <th>Description</th>
+                    <th>Link</th>
+                </tr>
+                <tr>
+                    <td>Portfolio Website</td>
+                    <td>A simple portfolio website to showcase my skills and projects.</td>
+                    <td><a href="#">View Project</a></td>
+                </tr>
+                <tr>
+                    <td>Blog Website</td>
+                    <td>A blog website built with HTML, CSS, and JavaScript.</td>
+                    <td><a href="#">View Project</a></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills">
+            <h2>Skills</h2>
+            <ul>
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JavaScript</li>
+                <li>React.js</li>
+            </ul>
+        </section>
+
+        <!-- Contact Form Section -->
+        <section id="contact">
+            <h2>Contact Me</h2>
+            <form action="/submit" method="post">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+                <br>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <br>
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="4" required></textarea>
+                <br>
+                <button type="submit">Send Message</button>
+            </form>
+        </section>
+
+        <!-- Footer Section -->
+        <footer>
+            <p>&copy; 2024 My Portfolio. All rights reserved.</p>
+        </footer>
+
     </body>
     </html>
+
 ```
 
-## 12. HTML is Not Case Sensitive
+# Tasks
 
-HTML tags are not case sensitive: <P> means the same as <p>.
+## Task 1:-
+Create a simple personal profile page that includes:
+- Your name, photo, and a short bio.
+- A list of their hobbies or interests using an unordered list.
 
-The HTML standard does not require lowercase tags, but W3C recommends lowercase in HTML, and demands lowercase for stricter document types like XHTML.
-
-```bash
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>My First Webpage</title>
-    </head>
-    <body>
-        <h1>Welcome to My Webpage</h1>
-        <p>This is a paragraph of text.</p>
-        <P>This is a paragraph of text.</P>
-    </body>
-    </html>
-```
-
-## 12. HTML is Not Case Sensitive
-
-HTML tags are not case sensitive: <P> means the same as <p>.
-
-The HTML standard does not require lowercase tags, but W3C recommends lowercase in HTML, and demands lowercase for stricter document types like XHTML.
+## Task 2:-
+Complete above portfolio using HTML by taking reference of below link
 
 ```bash
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>My First Webpage</title>
-    </head>
-    <body>
-        <h1>Welcome to My Webpage</h1>
-        <p>This is a paragraph of text.</p>
-        <P>This is a paragraph of text.</P>
-    </body>
-    </html>
-```
-
-## 12. HTML is Not Case Sensitive
-
-HTML tags are not case sensitive: <P> means the same as <p>.
-
-The HTML standard does not require lowercase tags, but W3C recommends lowercase in HTML, and demands lowercase for stricter document types like XHTML.
-
-```bash
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>My First Webpage</title>
-    </head>
-    <body>
-        <h1>Welcome to My Webpage</h1>
-        <p>This is a paragraph of text.</p>
-        <P>This is a paragraph of text.</P>
-    </body>
-    </html>
-```
-
-## 12. HTML is Not Case Sensitive
-
-HTML tags are not case sensitive: <P> means the same as <p>.
-
-The HTML standard does not require lowercase tags, but W3C recommends lowercase in HTML, and demands lowercase for stricter document types like XHTML.
-
-```bash
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>My First Webpage</title>
-    </head>
-    <body>
-        <h1>Welcome to My Webpage</h1>
-        <p>This is a paragraph of text.</p>
-        <P>This is a paragraph of text.</P>
-    </body>
-    </html>
-```
-
-## 12. HTML is Not Case Sensitive
-
-HTML tags are not case sensitive: <P> means the same as <p>.
-
-The HTML standard does not require lowercase tags, but W3C recommends lowercase in HTML, and demands lowercase for stricter document types like XHTML.
-
-```bash
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>My First Webpage</title>
-    </head>
-    <body>
-        <h1>Welcome to My Webpage</h1>
-        <p>This is a paragraph of text.</p>
-        <P>This is a paragraph of text.</P>
-    </body>
-    </html>
+    https://wordpressboss.com/cp/reanan-demo/index-particle.html
 ```
