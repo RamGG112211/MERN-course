@@ -520,6 +520,12 @@
         // Delete user
         router.delete('/:id', authMiddleware(['Admin', 'Doctor', 'User', 'Hospital']), deleteUser);
 
+        // Check user role
+        router.get('/check', authMiddleware([]), (req, res) => {
+            // Assuming `req.user` is set by the authMiddleware after verifying the token
+            return res.json({ role: req.user.role }); // Return the user's role
+        });
+
         export default router;
 
 

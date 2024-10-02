@@ -19,6 +19,18 @@ router.post("/", createUser);
 // Get all users
 router.get("/", authMiddleware(["Admin"]), getUsers);
 
+// Check user role
+router.get(
+  "/check",
+  authMiddleware(["User", "Admin", "Doctor", "Hospital"]),
+  (req, res) => {
+    console.log("req.user", req.user);
+
+    // Assuming `req.user` is set by the authMiddleware after verifying the token
+    return res.json({ role: req.user.role }); // Return the user's role
+  }
+);
+
 // Get user by ID
 router.get(
   "/:id",
@@ -51,5 +63,7 @@ router.delete(
 router.post("/signup", signup);
 // Login route
 router.post("/login", login);
+
+
 
 export default router;
