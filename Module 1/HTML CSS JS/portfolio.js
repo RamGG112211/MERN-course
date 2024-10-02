@@ -59,3 +59,67 @@ window.addEventListener("scroll", () => {
     header.classList.add("bg-transparent");
   }
 });
+
+
+// Example of fetching user data using a promise
+const fetchUserData = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // Simulate an API call
+      const data = {
+        name: "John Doe",
+        portfolio: ["Project A", "Project B"]
+      };
+      resolve(data); // Resolve promise with user data
+    }, 1000); // Simulate network delay
+  });
+};
+
+// Using the promise
+fetchUserData()
+  .then((data) => {
+    console.log("User Data:", data);
+    // You can update the UI with the fetched data here
+  })
+  .catch((error) => {
+    console.error("Error fetching user data:", error);
+  });
+
+  // Mock function to simulate fetching doctor details
+function fetchDoctorDetails(doctorId, callback) {
+  // Simulate an asynchronous API call with setTimeout
+  setTimeout(() => {
+    // Mock data
+    const doctors = {
+      1: { id: 1, name: 'Dr. John Doe', specialty: 'Cardiology' },
+      2: { id: 2, name: 'Dr. Jane Smith', specialty: 'Pediatrics' },
+    };
+
+    // Simulate fetching the doctor from the mock data
+    const doctor = doctors[doctorId];
+    callback(doctor); // Call the callback with the fetched doctor data
+  }, 1000); // 1 second delay to simulate network latency
+}
+
+// Usage example
+fetchDoctorDetails(1, (doctor) => {
+  if (doctor) {
+    console.log('Fetched doctor details:', doctor);
+  } else {
+    console.log('Doctor not found');
+  }
+});
+
+
+// Function to fetch posts from JSONPlaceholder
+function fetchPosts(callback) {
+  fetch('https://jsonplaceholder.typicode.com/posts')
+    .then(response => response.json())
+    .then(data => callback(data))
+    .catch(error => console.error('Error fetching posts:', error));
+}
+
+// Usage example
+fetchPosts((posts) => {
+  console.log('Fetched posts:', posts);
+});

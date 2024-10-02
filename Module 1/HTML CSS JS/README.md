@@ -1,439 +1,209 @@
 # Module 1 HTML CSS JS COMBO
 
-## 1. Variables and Data Types
+## 1. The HTML DOM (Document Object Model)
 
-Understanding how to declare variables and different data types is fundamental to working with React.
+When a web page is loaded, the browser creates a Document Object Model of the page.
 
-### File: variables.js
+The HTML DOM model is constructed as a tree of Objects:
+
+![Alt Text](images/dom.png)
+
+With the object model, JavaScript gets all the power it needs to create dynamic HTML:
+
+- JavaScript can change all the HTML elements in the page
+- JavaScript can change all the HTML attributes in the page
+- JavaScript can change all the CSS styles in the page
+- JavaScript can remove existing HTML elements and attributes
+- JavaScript can add new HTML elements and attributes
+- JavaScript can react to all existing HTML events in the page
+- JavaScript can create new HTML events in the page
+
+> The HTML DOM is a standard object model and programming interface for HTML. It defines:
+
+The HTML elements as objects
+The properties of all HTML elements
+The methods to access all HTML elements
+The events for all HTML elements
+
+### The getElementById Method
+
+The most common way to access an HTML element is to use the id of the element.
+
+In the example below the getElementById method used id="demo" to find the element.
 
 ```bash
-        // ES6 variable declarations
-        let name = 'John'; // Block-scoped variable
-        const age = 30; // Constant (can't be re-assigned)
+        <html>
+        <body>
 
-        // Primitive data types
-        const isStudent = true; // Boolean
-        const score = null; // Null
-        const grade = undefined; // Undefined
-        const id = Symbol('id'); // Symbol
+        <p id="demo"></p>
 
-        // Objects
-        const user = {
-        name: 'John',
-        age: 30
-        };
-        console.log(user.name); // 'John'
+        <script>
+        document.getElementById("demo").innerHTML = "Hello World!";
+        </script>
+
+        </body>
+        </html>
 
 ```
 
-## 2. let, const, and var
+### The innerHTML Property
 
-JavaScript has three keywords for declaring variables: let, const, and var. Understanding the differences is crucial for writing clean and bug-free code.
+The easiest way to get the content of an element is by using the innerHTML property.
 
-let and const (ES6):
-Both let and const are block-scoped (i.e., they are only accessible within the block they are defined in).
+The innerHTML property is useful for getting or replacing the content of HTML elements.
 
-let:
-Use let when you want to declare a variable whose value can change later.
-
-### File: let.js
+### Changing HTML Content
 
 ```bash
-        let counter = 0;
-        counter++;
-        console.log(counter); // 1
+       <html>
+        <body>
 
-        if (true) {
-        let insideBlock = 'I am inside a block';
-        console.log(insideBlock); // 'I am inside a block'
-        }
-        // console.log(insideBlock); // Error: insideBlock is not defined (because it's block-scoped)
+        <p id="p1">Hello World!</p>
+
+        <script>
+        document.getElementById("p1").innerHTML = "New text!";
+        </script>
+
+        </body>
+        </html>
 
 ```
 
-const:
-Use const when you want to declare a constant (a variable that should not be reassigned after being defined).
-You cannot reassign a const variable, but if it holds an object or array, you can modify the contents of the object/array.
+### Changing the Value of an Attribute
+To change the value of an HTML attribute, use this syntax:
 
-### File: const.js
-
+document.getElementById(id).attribute = new value
 ```bash
-       const PI = 3.14;
-        console.log(PI); // 3.14
+        <!DOCTYPE html>
+        <html>
+        <body>
 
-        // PI = 3.15; // Error: Assignment to constant variable
+        <img id="myImage" src="smiley.gif">
 
-        const user = { name: 'John', age: 25 };
-        user.age = 26; // This is allowed
-        console.log(user.age); // 26
+        <script>
+        document.getElementById("myImage").src = "landscape.jpg";
+        </script>
+
+        </body>
+        </html>
+```
+
+### The addEventListener() method
+
+- The addEventListener() method attaches an event handler to the specified element.
+
+- The addEventListener() method attaches an event handler to an element without overwriting existing event handlers.
+
+- You can add many event handlers to one element.
+
+- You can add many event handlers of the same type to one element, i.e two "click" events.
+
+- You can add event listeners to any DOM object not only HTML elements. i.e the window object.
+
+- The addEventListener() method makes it easier to control how the event reacts to bubbling.
+
+- When using the addEventListener() method, the JavaScript is separated from the HTML markup, for better readability and allows you to add event listeners even when you do not control the HTML markup.
+
+### The HTMLCollection Object
+The getElementsByTagName() method returns an HTMLCollection object.
+
+An HTMLCollection object is an array-like list (collection) of HTML elements.
+
+The following code selects all <p> elements in a document:
+
+Example
+const myCollection = document.getElementsByTagName("p");
+The elements in the collection can be accessed by an index number.
+
+To access the second <p> element you can write:
+
+myCollection[1]
+
+> An HTMLCollection is NOT an array!
+
+An HTMLCollection may look like an array, but it is not.
+
+You can loop through the list and refer to the elements with a number (just like an array).
+
+However, you cannot use array methods like valueOf(), pop(), push(), or join() on an HTMLCollection.
+
+### The HTML DOM NodeList Object
+A NodeList object is a list (collection) of nodes extracted from a document.
+
+A NodeList object is almost the same as an HTMLCollection object.
+
+Some (older) browsers return a NodeList object instead of an HTMLCollection for methods like getElementsByClassName().
+
+All browsers return a NodeList object for the property childNodes. 
+
+Most browsers return a NodeList object for the method querySelectorAll().
+
+The following code selects all <p> nodes in a document
+
+### The Difference Between an HTMLCollection and a NodeList
+An HTMLCollection is a collection of document elements.
+
+A NodeList is a collection of document nodes (element nodes, attribute nodes, and text nodes).
+
+HTMLCollection items can be accessed by their name, id, or index number.
+
+NodeList items can only be accessed by their index number.
+
+html file
+```bash
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>NodeList vs HTMLCollection</title>
+        </head>
+        <body>
+        <div class="container">
+                <p id="para1">Paragraph 1</p>
+                <p id="para2">Paragraph 2</p>
+                <span id="span1">Span 1</span>
+                <span id="span2">Span 2</span>
+        </div>
+        <script src="script.js"></script>
+        </body>
+        </html>
 
 ```
 
-var (Old way of declaring variables):
-var is function-scoped or globally-scoped and allows redeclaration, which can lead to unexpected behavior.
-var variables can be hoisted (i.e., they can be used before they are declared, which can cause bugs).
-It's generally recommended to avoid using var in modern JavaScript.
-
-### File: var.js
-
+script.js file
 ```bash
-        var x = 10;
-        console.log(x); // 10
+        // Accessing elements using HTMLCollection
+        const paragraphs = document.getElementsByTagName('p'); // Returns an HTMLCollection
+        console.log('Accessing HTMLCollection:');
+        console.log(paragraphs); // Logs the entire collection
 
-        if (true) {
-        var y = 20;
-        }
-        console.log(y); // 20 (y is not block-scoped, so it's accessible outside the block)
+        // Accessing by index
+        console.log('Accessing by index:');
+        console.log(paragraphs[0].innerText); // "Paragraph 1"
+        console.log(paragraphs[1].innerText); // "Paragraph 2"
 
-        console.log(a); // undefined (due to hoisting)
-        var a = 5;
-```
+        // Accessing by ID (not possible directly, but we can use a method)
+        console.log('Accessing by ID:');
+        console.log(document.getElementById('para1').innerText); // "Paragraph 1"
 
-## Key Differences:
+        // Accessing elements using NodeList
+        const allElements = document.querySelectorAll('.container *'); // Returns a NodeList
+        console.log('Accessing NodeList:');
+        console.log(allElements); // Logs the entire NodeList
 
-### Scope:
+        // Accessing by index
+        console.log('Accessing by index:');
+        console.log(allElements[0].innerText); // "Paragraph 1"
+        console.log(allElements[1].innerText); // "Paragraph 2"
+        console.log(allElements[2].innerText); // "Span 1"
+        console.log(allElements[3].innerText); // "Span 2"
 
-- var is function-scoped or global-scoped.
-- let and const are block-scoped
-  .
-
-### Reassignability:
-
-- var and let can be reassigned.
-- const cannot be reassigned, though object properties or array elements can be changed.
-
-### Hoisting:
-
-- var is hoisted, so it can be used before it's declared (but it will be undefined).
-- let and const are not accessible before their declaration.
-
-### Examples of hoisting
-
-```bash
-        console.log(foo); // undefined due to hoisting
-        var foo = 'bar';
-
-        console.log(bar); // Error: Cannot access 'bar' before initialization
-        let bar = 'foo';
-
-```
-
-## 3. Functions
-
-Functions are essential for React components, event handling, and more.
-
-### File: functions.js
-
-```bash
-        // Function Declaration
-        function greet(name) {
-        return `Hello, ${name}`;
-        }
-
-        // Function Expression
-        const add = function(a, b) {
-        return a + b;
-        };
-
-        // Arrow Functions (commonly used in React)
-        const multiply = (a, b) => a * b;
-
-        console.log(greet('React')); // Hello, React
-        console.log(add(5, 3)); // 8
-        console.log(multiply(4, 2)); // 8
-```
-
-## 4. Array Methods
-
-React often deals with lists of items, so being familiar with array methods is crucial.
-
-### File: array.js
-
-```bash
-        const numbers = [1, 2, 3, 4, 5];
-
-        // .map() - transforms array elements (commonly used in React rendering)
-        const doubled = numbers.map(num => num * 2);
-
-        // .filter() - filters elements based on a condition
-        const evens = numbers.filter(num => num % 2 === 0);
-
-        // .reduce() - reduces array to a single value
-        const sum = numbers.reduce((acc, curr) => acc + curr, 0);
-
-        console.log(doubled); // [2, 4, 6, 8, 10]
-        console.log(evens); // [2, 4]
-        console.log(sum); // 15
-
-```
-
-## 5. Objects and Destructuring
-
-In React, you often work with objects (props, state), and destructuring makes it easier to access values.
-
-### File: object.js
-
-```bash
-        // Object Destructuring
-        const person = {
-        name: 'Alice',
-        age: 25,
-        location: 'New York'
-        };
-
-        const { name, age } = person;
-        console.log(name, age); // Alice 25
-
-        // Array Destructuring (useful in hooks like useState)
-        const numbers = [1, 2, 3];
-        const [first, second] = numbers;
-        console.log(first, second); // 1 2
-
-
-```
-
-## 6. Spread and Rest Operators
-
-The spread and rest operators (...) are widely used in React, especially for managing props and state.
-
-### File: spread.js
-
-```bash
-        // Spread - copying or combining arrays and objects
-        const arr1 = [1, 2, 3];
-        const arr2 = [4, 5, 6];
-        const combinedArr = [...arr1, ...arr2]; // [1, 2, 3, 4, 5, 6]
-
-        const obj1 = { name: 'Alice' };
-        const obj2 = { age: 25 };
-        const combinedObj = { ...obj1, ...obj2 }; // { name: 'Alice', age: 25 }
-
-        // Rest - handling function arguments
-        function sum(...numbers) {
-        return numbers.reduce((acc, curr) => acc + curr, 0);
+        // Trying to access by name or ID (not applicable for NodeList)
+        try {
+        console.log(allElements['para1'].innerText); // This will be undefined
+        } catch (error) {
+        console.log('Error accessing by ID or name in NodeList:', error.message);
         }
 
-        console.log(sum(1, 2, 3)); // 6
-
-
-```
-
-## 7. Promises and Async/Await
-
-Asynchronous JavaScript is essential for handling API requests in React.
-
-### File: promises.js
-
-```bash
-        // Promise Example
-        const fetchData = () => {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => resolve('Data received'), 2000);
-        });
-        };
-
-        fetchData().then(data => console.log(data)); // Data received
-
-        // Async/Await Example
-        async function getData() {
-        const data = await fetchData();
-        console.log(data); // Data received
-        }
-        getData();
-
-
-```
-
-## 8. Classes
-
-Although React uses function components more frequently now, understanding classes is still important for older projects (class components).
-
-### File: classes.js
-
-```bash
-       // ES6 Class Syntax
-        class Person {
-        constructor(name, age) {
-            this.name = name;
-            this.age = age;
-        }
-
-        greet() {
-            console.log(`Hello, my name is ${this.name}`);
-        }
-        }
-
-        const john = new Person('John', 30);
-        john.greet(); // Hello, my name is John
-
-```
-
-## 9. Modules (Import/Export)
-
-Modules are crucial in React for splitting code across different files.
-
-### File: modules.js
-
-```bash
-        // myModule.js
-        export const sayHello = (name) => `Hello, ${name}`;
-
-        // main.js
-        import { sayHello } from './myModule';
-        console.log(sayHello('React')); // Hello, React
-
-
-```
-
-## 10. template Literals
-
-Template literals make it easier to work with strings and are frequently used in React for JSX rendering.
-
-### File: template-literals.js
-
-```bash
-        const name = 'React';
-        const welcomeMessage = `Welcome to ${name}!`;
-        console.log(welcomeMessage); // Welcome to React!
-
-```
-
-## 11. Higher-Order Functions
-
-Higher-order functions (functions that take other functions as arguments or return functions) are central to how React works.
-
-### File: higher-order-function.js
-
-```bash
-       // Higher-order function example
-        function withLogging(fn) {
-        return function(...args) {
-            console.log('Function is being called');
-            return fn(...args);
-        };
-        }
-
-        const sum = (a, b) => a + b;
-        const sumWithLogging = withLogging(sum);
-
-        console.log(sumWithLogging(3, 4)); // Logs: "Function is being called" and 7
-
-```
-
-## 12. Event Handling
-
-Understanding how JavaScript handles events is essential for React components.
-
-### File: event.js
-
-```bash
-        document.getElementById('btn').addEventListener('click', () => {
-        console.log('Button clicked!');
-        });
-
-```
-
-## 13. Ternary Operator
-
-Ternary operators are commonly used for conditional rendering in React.
-
-### File: ternary.js
-
-Ternary operators are commonly used for conditional rendering in React.
-
-```bash
-        const isLoggedIn = true;
-        const message = isLoggedIn ? 'Welcome back!' : 'Please log in';
-        console.log(message); // Welcome back!
-
-```
-
-## 14. Closures
-
-Closures allow a function to access variables from its outer scope, useful for handling events and callbacks in React.
-
-### File: closures.js
-
-```bash
-        function makeCounter() {
-        let count = 0;
-        return function() {
-            count++;
-            console.log(count);
-        };
-        }
-
-        const counter = makeCounter();
-        counter(); // 1
-        counter(); // 2
-
-
-```
-
-## 15. Array of Objects
-
-An array of objects is a collection where each element is an object. It's a common data structure used in React, especially for lists (like rendering items from an API).
-
-### Explanation:
-
-- Each element in the array is an object with key-value pairs.
-- You can access, manipulate, and filter objects within the array using array methods like .map(), .filter(), etc.
-
-### File: objects-array.js
-
-```bash
-        const users = [
-        { id: 1, name: 'Alice', age: 25 },
-        { id: 2, name: 'Bob', age: 30 },
-        { id: 3, name: 'Charlie', age: 35 },
-        ];
-
-        // Accessing an object
-        console.log(users[0].name); // 'Alice'
-
-        // Using .map() to get all names
-        const names = users.map(user => user.name);
-        console.log(names); // ['Alice', 'Bob', 'Charlie']
-
-        // Using .filter() to get users above 30 years
-        const olderUsers = users.filter(user => user.age > 30);
-        console.log(olderUsers); // [{ id: 3, name: 'Charlie', age: 35 }]
-
-```
-
-## 16. Objects
-
-In JavaScript, an object is a collection of key-value pairs. Objects are fundamental to React because props and state are often objects.
-
-### Explanation:
-
-- Each object consists of properties, where each property has a key (or name) and a value.
-- Values can be of any data type (strings, numbers, arrays, functions, even other objects).
-
-### File: objects.js
-
-```bash
-        // Creating an object
-        const person = {
-        name: 'John',
-        age: 28,
-        isStudent: false,
-        greet: function() {
-            return `Hello, my name is ${this.name}`;
-        }
-        };
-
-        // Accessing properties
-        console.log(person.name); // 'John'
-
-        // Modifying properties
-        person.age = 29;
-        console.log(person.age); // 29
-
-        // Adding a new property
-        person.city = 'New York';
-        console.log(person.city); // 'New York'
-
-        // Using a method inside the object
-        console.log(person.greet()); // 'Hello, my name is John'
 ```
