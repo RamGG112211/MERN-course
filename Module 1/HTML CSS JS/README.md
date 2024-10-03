@@ -207,3 +207,19 @@ script.js file
         }
 
 ```
+
+
+1 Change Text Content:
+Create a button that, when clicked, changes the text content of a <p> tag or a heading.
+
+2 Change CSS Styles:
+Create a button that, when clicked, changes the background color or font size of a div or text.
+
+3 Create Elements Dynamically:
+Have students create a to-do list where they can add new list items dynamically using JavaScript.
+
+4. Delete Elements Dynamically:
+Modify the to-do list to include a delete button for each item that removes the item from the list.
+
+5. Toggle Visibility:
+Create a button that toggles the visibility of a div or image when clicked.
