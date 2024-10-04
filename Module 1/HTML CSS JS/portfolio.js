@@ -23,6 +23,14 @@ menuBtn.addEventListener("click", () => {
   }
 });
 
+menuItems.forEach((item) => {
+  item.addEventListener("click", () => {
+    // Remove the classes when an anchor tag is clicked
+    menu_container.classList.remove("grid-rows-[1fr]", "pb-3", "md:pb-5");
+    menu_container.classList.add("grid-rows-[0fr]", "pb-0");
+  });
+});
+
 // Detect which section is active on scroll
 window.addEventListener("scroll", () => {
   let currentSection = " ";
@@ -60,7 +68,6 @@ window.addEventListener("scroll", () => {
   }
 });
 
-
 // Example of fetching user data using a promise
 const fetchUserData = () => {
   return new Promise((resolve, reject) => {
@@ -68,7 +75,7 @@ const fetchUserData = () => {
       // Simulate an API call
       const data = {
         name: "John Doe",
-        portfolio: ["Project A", "Project B"]
+        portfolio: ["Project A", "Project B"],
       };
       resolve(data); // Resolve promise with user data
     }, 1000); // Simulate network delay
@@ -85,14 +92,14 @@ fetchUserData()
     console.error("Error fetching user data:", error);
   });
 
-  // Mock function to simulate fetching doctor details
+// Mock function to simulate fetching doctor details
 function fetchDoctorDetails(doctorId, callback) {
   // Simulate an asynchronous API call with setTimeout
   setTimeout(() => {
     // Mock data
     const doctors = {
-      1: { id: 1, name: 'Dr. John Doe', specialty: 'Cardiology' },
-      2: { id: 2, name: 'Dr. Jane Smith', specialty: 'Pediatrics' },
+      1: { id: 1, name: "Dr. John Doe", specialty: "Cardiology" },
+      2: { id: 2, name: "Dr. Jane Smith", specialty: "Pediatrics" },
     };
 
     // Simulate fetching the doctor from the mock data
@@ -104,22 +111,21 @@ function fetchDoctorDetails(doctorId, callback) {
 // Usage example
 fetchDoctorDetails(1, (doctor) => {
   if (doctor) {
-    console.log('Fetched doctor details:', doctor);
+    console.log("Fetched doctor details:", doctor);
   } else {
-    console.log('Doctor not found');
+    console.log("Doctor not found");
   }
 });
 
-
 // Function to fetch posts from JSONPlaceholder
 function fetchPosts(callback) {
-  fetch('https://jsonplaceholder.typicode.com/posts')
-    .then(response => response.json())
-    .then(data => callback(data))
-    .catch(error => console.error('Error fetching posts:', error));
+  fetch("https://jsonplaceholder.typicode.com/posts")
+    .then((response) => response.json())
+    .then((data) => callback(data))
+    .catch((error) => console.error("Error fetching posts:", error));
 }
 
 // Usage example
 fetchPosts((posts) => {
-  console.log('Fetched posts:', posts);
+  console.log("Fetched posts:", posts);
 });

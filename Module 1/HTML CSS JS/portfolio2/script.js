@@ -12,34 +12,46 @@ const closeModal = document.querySelector(".close");
 const projectForm = document.getElementById("project-form");
 const projectTitleInput = document.getElementById("project-title");
 const projectDescriptionInput = document.getElementById("project-description");
+const categoryFilter = document.getElementById("category-filter");
+const projectCategoryInput = document.getElementById("project-category");
 
 // Toast Container
 const toastContainer = document.getElementById("toast-container");
-
-// Initial project data
+// Initial project data with categories
 let projects = [
   {
     title: "Portfolio Website",
     description:
       "A personal portfolio website built with HTML, CSS, and JavaScript.",
+    category: "Web development", // Added category
   },
   {
     title: "ToDo App",
     description: "A dynamic ToDo application with CRUD functionalities.",
+    category: "Mobile app development", // Added category
   },
 ];
 
-// Render Projects to the DOM
-function renderProjects() {
+// Categories Array
+const categories = [
+  "Web development",
+  "Mobile app development",
+  "Desktop app development",
+  "UI/UX design",
+  "Graphics design",
+];
+
+// Render Projects to the DOM (filtered by category)
+function renderProjects(filteredProjects = projects) {
   projectList.innerHTML = ""; // Clear list
-  if (projects.length === 0) {
+  if (filteredProjects.length === 0) {
     const li = document.createElement("li");
-    li.textContent = "No projects added yet.";
+    li.textContent = "No projects found for this category.";
     li.style.textAlign = "center";
     projectList.appendChild(li);
     return;
   }
-  projects.forEach((project, index) => {
+  filteredProjects.forEach((project, index) => {
     const li = document.createElement("li");
 
     const projectInfo = document.createElement("div");
@@ -51,8 +63,14 @@ function renderProjects() {
     const projectDesc = document.createElement("p");
     projectDesc.textContent = project.description;
 
+    // Display category
+    const projectCategory = document.createElement("p");
+    projectCategory.textContent = `Category: ${project.category}`;
+    projectCategory.style.fontStyle = "italic";
+
     projectInfo.appendChild(projectTitle);
     projectInfo.appendChild(projectDesc);
+    projectInfo.appendChild(projectCategory); // Append category
 
     li.appendChild(projectInfo);
 
@@ -66,6 +84,16 @@ function renderProjects() {
     projectList.appendChild(li);
   });
 }
+
+// Filter projects by category
+categoryFilter.addEventListener("change", (e) => {
+  const selectedCategory = e.target.value;
+  const filteredProjects =
+    selectedCategory === "all"
+      ? projects
+      : projects.filter((project) => project.category === selectedCategory);
+  renderProjects(filteredProjects);
+});
 
 // Show modal to add a project
 addProjectBtn.addEventListener("click", () => {
@@ -83,14 +111,19 @@ window.addEventListener("click", (e) => {
   }
 });
 
-// Add new project from modal form
+// Add Project Form Submission
 projectForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const projectTitle = projectTitleInput.value.trim();
   const projectDescription = projectDescriptionInput.value.trim();
+  const projectCategory = projectCategoryInput.value; // Get selected category
 
-  if (projectTitle && projectDescription) {
-    projects.push({ title: projectTitle, description: projectDescription });
+  if (projectTitle && projectDescription && projectCategory) {
+    projects.push({
+      title: projectTitle,
+      description: projectDescription,
+      category: projectCategory,
+    });
     renderProjects();
     showToast("Project added successfully!", "success");
     projectModal.style.display = "none";
@@ -175,5 +208,29 @@ function showToast(message, type) {
   }, 3100);
 }
 
+// Populate category dropdowns dynamically
+function populateCategoryDropdowns() {
+  // Populate filter dropdown
+  categoryFilter.innerHTML = `<option value="all">All</option>`;
+  categories.forEach((category) => {
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    categoryFilter.appendChild(option);
+  });
+
+  // Populate form category dropdown
+  projectCategoryInput.innerHTML = ""; // Clear previous options
+  categories.forEach((category) => {
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    projectCategoryInput.appendChild(option);
+  });
+}
+
 // Initialize the app
+populateCategoryDropdowns();
+console.log("value: ", categoryFilter.value);
+
 renderProjects();

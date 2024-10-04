@@ -1,64 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Portfolio</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header class="padding">
-    <h1>My Portfolio</h1>
-    <button id="theme-toggle">Toggle Theme</button>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Portfolio</title>
+    <link rel="stylesheet" href="style.css" />
+      <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <header class="padding">
+      <h1>My Portfolio</h1>
+      <button id="theme-toggle">Toggle Theme</button>
+    </header>
 
-  <main>
-    <section id="about" class="padding">
-      <h2>About Me</h2>
-      <p>Hello, I'm a web developer proficient in JavaScript, React.js, and more!</p>
-    </section>
+    <main>
+      <section id="about" class="padding">
+        <h2>About Me</h2>
+        <p>
+          Hello, I'm a web developer proficient in JavaScript, React.js, and
+          more!
+        </p>
+      </section>
 
-    <section id="projects" class="padding">
-      <h2>Projects</h2>
-      <ul id="project-list"></ul>
-      <button id="add-project">Add Project</button>
-    </section>
+      <section id="projects" class="padding">
+        <h2>Projects</h2>
 
-    <section id="contact" class="padding">
-      <h2>Contact Me</h2>
-      <form id="contact-form">
-        <label for="name">Name:</label>
-        <input type="text" id="name" required>
-        <label for="email">Email:</label>
-        <input type="email" id="email" required>
-        <button type="submit">Submit</button>
-        <div id="form-message"></div>
-      </form>
-    </section>
-  </main>
+        <!-- Category Selection Dropdown (Dynamic) -->
+       <label for="category-filter" class="block mb-2 font-semibold">Filter by Category:</label>
+    <select id="category-filter" class="border border-gray-300 rounded-md p-2"></select>
 
-  <footer class="padding">
-    <p>&copy; 2024 My Portfolio</p>
-  </footer>
+        <ul id="project-list"></ul>
+        <button id="add-project">Add Project</button>
+      </section>
 
-  <!-- Project Modal -->
-  <div id="project-modal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h3>Add New Project</h3>
-      <form id="project-form">
-        <label for="project-title">Project Title:</label>
-        <input type="text" id="project-title" required>
-        <label for="project-description">Project Description:</label>
-        <textarea id="project-description" required></textarea>
-        <button type="submit">Add Project</button>
-      </form>
+      <section id="contact" class="padding">
+        <h2>Contact Me</h2>
+        <form id="contact-form">
+          <label for="name">Name:</label>
+          <input type="text" id="name" required />
+          <label for="email">Email:</label>
+          <input type="email" id="email" required />
+          <button type="submit">Submit</button>
+          <div id="form-message"></div>
+        </form>
+      </section>
+    </main>
+
+    <footer class="padding">
+      <p>&copy; 2024 My Portfolio</p>
+    </footer>
+
+    <!-- Project Modal -->
+    <div id="project-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Add New Project</h3>
+        <form id="project-form">
+          <label for="project-title">Project Title:</label>
+          <input type="text" id="project-title" required />
+          <label for="project-description">Project Description:</label>
+          <textarea id="project-description" required></textarea>
+          <!-- Dynamic Category Select Input -->
+          <label for="project-category">Project Category:</label>
+           <select id="project-category" required class="border border-gray-300 rounded-md p-2 w-full mb-4">
+          <button type="submit">Add Project</button>
+        </form>
+      </div>
     </div>
-  </div>
 
-  <!-- Toast Notification -->
-  <div id="toast-container"></div>
+    <!-- Toast Notification -->
+    <div id="toast-container"></div>
 
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
