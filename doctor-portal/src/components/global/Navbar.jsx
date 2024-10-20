@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Link, useLocation } from "react-router-dom";
 
@@ -6,42 +6,13 @@ import {
   IoLocationOutline,
   IoCallOutline,
   IoHomeOutline,
-  IoFilter,
 } from "react-icons/io5";
 import { AiOutlineMail } from "react-icons/ai";
 import { FaRegCircleUser } from "react-icons/fa6";
-import {
-  FaHamburger,
-  FaCheck,
-  FaCaretDown,
-  FaPlus,
-  FaStar,
-  FaFacebookF,
-  FaLinkedinIn,
-  FaInstagram,
-  FaRegCalendarAlt,
-  FaWpforms,
-} from "react-icons/fa";
+import { FaHamburger } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
-import { RiExpandUpDownLine, RiSearchLine } from "react-icons/ri";
-import { VscSettings } from "react-icons/vsc";
-import { TbBed } from "react-icons/tb";
-import { MdOutlineBathtub, MdOutlineContactPhone } from "react-icons/md";
-import { SlSizeFullscreen } from "react-icons/sl";
-import { GiStarsStack } from "react-icons/gi";
-import { GrLinkNext, GrLinkPrevious } from "react-icons/gr";
-import { CgQuote } from "react-icons/cg";
-import { TbRulerMeasure } from "react-icons/tb";
-import {
-  IoPricetagsOutline,
-  IoCloudUploadOutline,
-  IoArrowRedo,
-} from "react-icons/io5";
-import { GrStatusUnknown } from "react-icons/gr";
-import { FiType } from "react-icons/fi";
-import { FaSignInAlt } from "react-icons/fa";
-import { FiUserPlus } from "react-icons/fi";
-import { TiUploadOutline } from "react-icons/ti";
+import Button from "./Button";
+import Wrapper from "./Wrapper";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -91,32 +62,23 @@ export default function Navbar() {
         closeMobileMenu();
       },
     },
-    // {
-    //   path: "/sale",
-    //   itemName: "Sale",
-    //   clickFn: () => {
-    //     closeMobileMenu();
-    //     console.log("Sale");
-    //   },
-    // },
-    // {
-    //   path: "/rent",
-    //   itemName: "Rent",
-    //   clickFn: () => {
-    //     closeMobileMenu();
-    //     console.log("rent");
-    //   },
-    // },
     {
-      path: "/properties",
-      itemName: "Properties",
+      path: "/doctors",
+      itemName: "Doctors",
       clickFn: () => {
         closeMobileMenu();
       },
     },
     {
-      path: "/blogs",
-      itemName: "Blogs",
+      path: "/hospitals",
+      itemName: "Hospitals",
+      clickFn: () => {
+        closeMobileMenu();
+      },
+    },
+    {
+      path: "/contact",
+      itemName: "Contact",
       clickFn: () => {
         closeMobileMenu();
       },
@@ -128,7 +90,7 @@ export default function Navbar() {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row gap-1 justify-between py-2 bg-primary text-white text-sm_paragraph">
+      <Wrapper className="flex flex-col sm:flex-row gap-1 justify-between py-2 bg-primary text-white text-sm_paragraph">
         <span className=" flex items-center gap-1">
           <IoLocationOutline />
           <span>Pokhara-13, Nepal</span>
@@ -142,12 +104,12 @@ export default function Navbar() {
 
           <span className="flex items-center gap-1">
             <AiOutlineMail />
-            <span>gharjagga@gmail.com</span>
+            <span>doctorhub3438@gmail.com</span>
           </span>
         </div>
-      </div>
+      </Wrapper>
 
-      <div className=" sticky z-50 top-0 bg-white py-3 flex justify-between items-center gap-2 shadow-md">
+      <Wrapper className=" sticky z-50 top-0 bg-white py-3 flex justify-between items-center gap-2 shadow-md">
         {/* <nav className=""> */}
         <Link to={"/"} className="flex items-center xl:w-[30%]  gap-2">
           <div className=" p-3 bg-primary w-max rounded-full">
@@ -160,7 +122,7 @@ export default function Navbar() {
             />
           </div>
 
-          <span className="font-semibold lg:text-xl">GharJagga</span>
+          <span className="font-semibold lg:text-xl">Doctor Hub</span>
         </Link>
 
         <div
@@ -199,17 +161,20 @@ export default function Navbar() {
               <div className=" lg:overflow-hidden">
                 <div className="py-2 px-2 flex flex-col xl:flex-row gap-2 items-start lg:items-end">
                   <Link to={"/auth"} onClick={closeMobileMenu}>
-                    <button className="flex items-center gap-2 whitespace-nowrap">
+                    <Button className="flex items-center gap-2 whitespace-nowrap">
                       <FaRegCircleUser className="text-lg" />
                       <span>Login/Register</span>
-                    </button>
+                    </Button>
                   </Link>
 
-                  <Link to={"/sell"} onClick={closeMobileMenu}>
-                    <button className="flex items-center gap-2 bg-primary whitespace-nowrap">
+                  <Link to={"/doctor-signup"} onClick={closeMobileMenu}>
+                    <Button
+                      variant="outlined"
+                      className="flex items-center gap-2 bg-primary whitespace-nowrap"
+                    >
                       <IoHomeOutline className="text-lg" />
-                      <span>Sell Property</span>
-                    </button>
+                      <span>Register as a Doctor</span>
+                    </Button>
                   </Link>
                 </div>
               </div>
@@ -217,14 +182,14 @@ export default function Navbar() {
           </div>
         </div>
 
-        <button
+        <Button
           className="p-2 hover:scale-105 transition duration-200 xl:hidden text-lg md:text-xl"
-          onClick={handleMenuToggler}
+          onClickFn={handleMenuToggler}
         >
           {!isMenuOpen ? <FaHamburger /> : <ImCross />}
-        </button>
+        </Button>
         {/* </nav> */}
-      </div>
+      </Wrapper>
     </>
   );
 }

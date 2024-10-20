@@ -231,6 +231,6 @@ function populateCategoryDropdowns() {
 
 // Initialize the app
 populateCategoryDropdowns();
-console.log("value: ", categoryFilter.value);
+// console.log("value: ", categoryFilter.value);
 
 renderProjects();

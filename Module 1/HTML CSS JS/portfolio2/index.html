@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Portfolio</title>
     <link rel="stylesheet" href="style.css" />
-      <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <header class="padding">
@@ -26,8 +29,14 @@
         <h2>Projects</h2>
 
         <!-- Category Selection Dropdown (Dynamic) -->
-       <label for="category-filter" class="block mb-2 font-semibold">Filter by Category:</label>
-    <select id="category-filter" class="border border-gray-300 rounded-md p-2"></select>
+        <label for="category-filter" class="block mb-2 font-semibold"
+          >Filter by Category:</label
+        >
+
+        <select
+          id="category-filter"
+          class="border border-gray-300 rounded-md p-2"
+        ></select>
 
         <ul id="project-list"></ul>
         <button id="add-project">Add Project</button>
@@ -62,7 +71,12 @@
           <textarea id="project-description" required></textarea>
           <!-- Dynamic Category Select Input -->
           <label for="project-category">Project Category:</label>
-           <select id="project-category" required class="border border-gray-300 rounded-md p-2 w-full mb-4">
+          <select
+            id="project-category"
+            class="border border-gray-300 rounded-md p-2 w-full mb-4"
+            required
+          ></select>
+
           <button type="submit">Add Project</button>
         </form>
       </div>
