@@ -22,6 +22,9 @@ const doctorSchema = new mongoose.Schema(
     clinicAddress: {
       type: String,
     },
+    profile: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

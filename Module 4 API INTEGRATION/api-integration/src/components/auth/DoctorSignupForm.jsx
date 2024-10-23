@@ -61,18 +61,18 @@ const DoctorSignupForm = ({ onSubmit }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "hospitalIds") {
-        console.log("value of hospital id: ", value);
-        
+      console.log("value of hospital id: ", value);
+
       const currentIndex = formData.hospitalIds.indexOf(value[0]);
       console.log("current index", currentIndex);
-      
+
       const newHospitalIds = [...value];
 
-    //   if (currentIndex === -1) {
-    //     newHospitalIds.push(...value); // Add hospital ID
-    //   } else {
-    //     newHospitalIds.splice(currentIndex, 1); // Remove hospital ID
-    //   }
+      //   if (currentIndex === -1) {
+      //     newHospitalIds.push(...value); // Add hospital ID
+      //   } else {
+      //     newHospitalIds.splice(currentIndex, 1); // Remove hospital ID
+      //   }
 
       // Update the form data state
       setFormData((prevData) => ({
@@ -117,7 +117,12 @@ const DoctorSignupForm = ({ onSubmit }) => {
                 Doctor Signup
               </Typography>
             </Box>
-            <form onSubmit={handleSubmit} noValidate autoComplete="off">
+            <form
+              onSubmit={handleSubmit}
+              noValidate
+              autoComplete="off"
+              encType="multipart/form-data"
+            >
               <TextField
                 variant="outlined"
                 margin="normal"
@@ -199,6 +204,17 @@ const DoctorSignupForm = ({ onSubmit }) => {
                   </Select>
                 </FormControl>
               )}
+
+              {/* File Input for Doctor's Profile Image */}
+              <input
+                type="file"
+                name="profileImage"
+                accept="image/*"
+                onChange={(e) =>
+                  setFormData({ ...formData, profileImage: e.target.files[0] })
+                }
+                required
+              />
 
               <TextField
                 fullWidth

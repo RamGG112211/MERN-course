@@ -1071,3 +1071,209 @@
 
 
 ```
+
+# Image file handling
+
+### 1. Install Multer
+
+```bash
+npm install multer
+
+```
+
+### 2. Set up multer
+
+```bash
+import multer from 'multer';
+import path from 'path';
+
+// Set up storage with Multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Directory to store uploaded files
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Unique file name with extension
+  },
+});
+
+// File filter to accept only images
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only JPEG, JPG, and PNG files are allowed'), false);
+  }
+};
+
+// Set up Multer middleware
+const upload = multer({
+  storage,
+  fileFilter,
+});
+
+```
+
+### 3. Update Doctor Schema to Include profileImage
+
+```bash
+import mongoose from "mongoose";
+
+const doctorSchema = new mongoose.Schema(
+  {
+    user_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    specialization: {
+      type: String,
+      required: true,
+    },
+    qualification: {
+      type: String,
+      required: true,
+    },
+    experienceYears: {
+      type: Number,
+      required: true,
+    },
+    clinicAddress: {
+      type: String,
+    },
+    profile: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
+
+export default mongoose.model("Doctor", doctorSchema);
+
+```
+
+### 4. update controllers
+
+```bash
+export const createDoctor = async (req, res) => {
+  const {
+    fullName,
+    email,
+    password,
+    specialization,
+    qualification,
+    experienceYears,
+    clinicAddress,
+    hospitalIds,
+  } = req.body;
+
+  try {
+    // Create user
+    const newUser = new User({
+      fullName,
+      email,
+      password, // Make sure to hash the password before saving in a real application
+    });
+    const savedUser = await newUser.save();
+
+    // Create doctor with profile image
+    const newDoctor = new Doctor({
+      user_id: savedUser._id,
+      specialization,
+      qualification,
+      experienceYears,
+      clinicAddress,
+      profileImage: req.file ? `/uploads/${req.file.filename}` : '', // Save image path
+    });
+    const savedDoctor = await newDoctor.save();
+
+    // Handle hospital associations
+    if (hospitalIds && hospitalIds.length > 0) {
+      const doctorHospitalAssociations = hospitalIds.map((hospitalId) => ({
+        doctor_id: savedDoctor._id,
+        hospital_id: hospitalId,
+      }));
+
+      await DoctorHospital.insertMany(doctorHospitalAssociations);
+    }
+
+    res.status(201).json({
+      message: "Doctor created and associated with hospitals",
+      doctor: savedDoctor,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+  export const updateDoctor = async (req, res) => {
+  const { id } = req.params;
+  const {
+    specialization,
+    qualification,
+    experienceYears,
+    clinicAddress,
+    hospitalIds,
+  } = req.body;
+
+  try {
+    // Fetch the existing doctor
+    const doctor = await Doctor.findById(id);
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    // Update doctor details
+    const updatedDoctor = await Doctor.findByIdAndUpdate(
+      id,
+      {
+        specialization,
+        qualification,
+        experienceYears,
+        clinicAddress,
+        profileImage: req.file ? `/uploads/${req.file.filename}` : doctor.profileImage, // Update image if uploaded, otherwise retain old one
+      },
+      { new: true }
+    );
+
+    // Update hospital associations
+    if (hospitalIds && hospitalIds.length > 0) {
+      // Remove old associations
+      await DoctorHospital.deleteMany({ doctor_id: id });
+
+      // Add new associations
+      const doctorHospitalAssociations = hospitalIds.map((hospitalId) => ({
+        doctor_id: id,
+        hospital_id: hospitalId,
+      }));
+      await DoctorHospital.insertMany(doctorHospitalAssociations);
+    }
+
+    res.status(200).json({
+      message: "Doctor updated and hospital associations updated",
+      doctor: updatedDoctor,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+```
+
+### 5. update routes
+
+```bash
+// Create a new doctor
+router.post("/", upload.single('profileImage'),createDoctor);
+
+// Update a doctor
+router.put("/:id",upload.single('profileImage'), authMiddleware(["Admin", "Doctor"]), updateDoctor);
+```
+
+### 6. serve the static images
+
+```bash
+app.use('/uploads', express.static('uploads'));
+
+```

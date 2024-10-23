@@ -1,6 +1,9 @@
+import { useGlobalContext } from "../../context/GlobalContextProvider";
 
 export default function Home() {
-  return (
-    <div>Home</div>
-  )
+  const { user, login, logout } = useGlobalContext();
+
+  console.log("user: ", user);
+
+  return <div>Home</div>;
 }

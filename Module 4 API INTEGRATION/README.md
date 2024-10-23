@@ -871,3 +871,188 @@
         export default App;
 
 ```
+
+
+### update doctor signup form for doctor profile upload
+```bash
+<form onSubmit={handleSubmit} noValidate autoComplete="off" encType="multipart/form-data">
+  <TextField
+    variant="outlined"
+    margin="normal"
+    required
+    fullWidth
+    label="Full Name"
+    name="fullName"
+    value={formData.fullName}
+    onChange={handleChange}
+  />
+  <TextField
+    variant="outlined"
+    margin="normal"
+    required
+    fullWidth
+    label="Email"
+    name="email"
+    type="email"
+    value={formData.email}
+    onChange={handleChange}
+  />
+  <TextField
+    variant="outlined"
+    margin="normal"
+    required
+    fullWidth
+    label="Password"
+    name="password"
+    type="password"
+    value={formData.password}
+    onChange={handleChange}
+  />
+  <FormControl fullWidth margin="normal" variant="outlined">
+    <InputLabel>Specialization</InputLabel>
+    <Select
+      label="Specialization"
+      name="specialization"
+      value={formData.specialization}
+      onChange={handleChange}
+      required
+    >
+      {specializations.map((spec) => (
+        <MenuItem key={spec} value={spec}>
+          {spec}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+
+  {/* Hospital Selection */}
+  {hospitals.length > 0 && (
+    <FormControl fullWidth margin="normal" variant="outlined">
+      <InputLabel>Hospitals</InputLabel>
+      <Select
+        label="Hospitals"
+        name="hospitalIds"
+        multiple
+        value={formData.hospitalIds}
+        onChange={handleChange}
+        renderValue={(selected) => {
+          const selectedHospitals = hospitals.filter((hospital) =>
+            selected.includes(hospital._id)
+          );
+          return selectedHospitals
+            .map((hospital) => hospital.hospitalName)
+            .join(", ");
+        }}
+      >
+        {hospitals.map((hospital) => (
+          <MenuItem key={hospital._id} value={hospital._id}>
+            <Checkbox
+              checked={
+                formData.hospitalIds.indexOf(hospital._id) > -1
+              }
+            />
+            <ListItemText primary={hospital.hospitalName} />
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  )}
+
+  {/* File Input for Doctor's Profile Image */}
+  <input
+    type="file"
+    name="profileImage"
+    accept="image/*"
+    onChange={(e) => setFormData({ ...formData, profileImage: e.target.files[0] })}
+    required
+  />
+
+  <TextField
+    fullWidth
+    label="Qualification"
+    name="qualification"
+    value={formData.qualification}
+    onChange={handleChange}
+    margin="normal"
+    variant="outlined"
+    required
+  />
+  <TextField
+    fullWidth
+    label="Experience Years"
+    name="experienceYears"
+    type="number"
+    value={formData.experienceYears}
+    onChange={handleChange}
+    margin="normal"
+    variant="outlined"
+    required
+  />
+  <TextField
+    fullWidth
+    label="Clinic Address"
+    name="clinicAddress"
+    value={formData.clinicAddress}
+    onChange={handleChange}
+    margin="normal"
+    variant="outlined"
+    required
+  />
+  <Button
+    type="submit"
+    variant="contained"
+    color="primary"
+    fullWidth
+    style={{ marginTop: "16px" }}
+  >
+    Sign Up
+  </Button>
+</form>
+
+
+```
+
+### update onSubmit function doctorSignupPage
+```bash
+const onSubmit = async (formData) => {
+  try {
+    // Create a new FormData object to handle both form data and the file upload
+    const formDataToSend = new FormData();
+    formDataToSend.append("fullName", formData.fullName);
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("password", formData.password);
+    formDataToSend.append("specialization", formData.specialization);
+    formDataToSend.append("qualification", formData.qualification);
+    formDataToSend.append("experienceYears", formData.experienceYears);
+    formDataToSend.append("clinicAddress", formData.clinicAddress);
+
+    // Append the hospitalIds array (if available) to FormData
+    if (formData.hospitalIds.length > 0) {
+      formData.hospitalIds.forEach((id) => {
+        formDataToSend.append("hospitalIds[]", id);
+      });
+    }
+
+    // Append the profile image (file)
+    if (formData.profileImage) {
+      formDataToSend.append("profileImage", formData.profileImage);
+    }
+
+    const response = await apiRequest({
+      method: "POST",
+      url: "/doctors",
+      data: formDataToSend,
+      headers: {
+        "Content-Type": "multipart/form-data", // Important for handling file uploads
+      },
+    });
+
+    console.log("Doctor signup successful:", response);
+    // Handle successful signup (e.g., show a success message, redirect, etc.)
+  } catch (error) {
+    console.error("Error signing up doctor:", error);
+    // Handle error (e.g., show an error message)
+  }
+};
+
+```

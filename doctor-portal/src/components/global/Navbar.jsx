@@ -88,6 +88,8 @@ export default function Navbar() {
   const location = useLocation();
   const pathname = location.pathname;
 
+  console.log("hellow")
+
   return (
     <>
       <Wrapper className="flex flex-col sm:flex-row gap-1 justify-between py-2 bg-primary text-white text-sm_paragraph">
