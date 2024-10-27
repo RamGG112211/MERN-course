@@ -15,6 +15,7 @@ import SignupPage from "./pages/auth/SignupPage";
 import LoginPage from "./pages/auth/LoginPage";
 import DoctorSignupPage from "./pages/auth/DoctorSignupPage";
 import HospitalSignupPage from "./pages/auth/HospitalSignupPage";
+import DoctorBooking from "./components/doctors/DoctorBooking";
 
 const App = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -59,6 +60,7 @@ const App = () => {
         <Route path="/" element={<p>Home</p>} />
         <Route path="/user/signup" element={<SignupPage />} />
         <Route path="/user/login" element={<LoginPage />} />
+        <Route path="/doctor/:id" element={<DoctorBooking />} />
         <Route path="/doctor/signup" element={<DoctorSignupPage />} />
 
         <Route path="/hospital/signup" element={<HospitalSignupPage />} />

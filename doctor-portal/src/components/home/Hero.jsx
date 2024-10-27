@@ -1,5 +1,4 @@
 import Wrapper from "../global/Wrapper";
-import Img from "../global/Img";
 import Button from "../global/Button";
 import SearchProviders from "./SearchProviders";
 import { Link } from "react-router-dom";
