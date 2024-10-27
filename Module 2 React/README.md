@@ -1200,3 +1200,1341 @@ export default function Navbar() {
     }
 
 ```
+
+# Redux Toolkit
+
+### 1. Install Redux Toolkit and React-Redux
+
+```bash
+  npm install @reduxjs/toolkit react-redux
+```
+
+### 2. Configure the Redux Store by creating store folder within src directory
+
+```bash
+  import { configureStore } from '@reduxjs/toolkit';
+  import counterReducer from './counterSlice';
+
+  export const store = configureStore({
+    reducer: {
+      counter: counterReducer,
+    },
+  });
+
+  export default store;
+
+```
+
+### 3. Create Doctors Slice (store/doctorsSlice.js)
+
+```bash
+  import { createSlice } from "@reduxjs/toolkit";
+
+  // Define the initial state using that type
+  const initialState = {
+    hospitalChosen: "",
+    specialityChosen: "",
+    cityChosenDoctor: "",
+    doctors: [],
+    filteredDoctors: [],
+    sort: "Name",
+    order: "A-Z",
+    currentlyViewedPageNum: 1,
+    numOfDoctorsPerPage: 6,
+    totalDoctors: undefined,
+    totalPage: undefined,
+  };
+
+  export const doctorsSlice = createSlice({
+    name: "doctors",
+    initialState,
+    reducers: {
+      updateHospitalChosen: (state, action) => {
+        state.hospitalChosen = action.payload;
+      },
+      updateSpecialityChosen: (state, action) => {
+        state.specialityChosen = action.payload;
+      },
+      updateCityChosenDoctor: (state, action) => {
+        state.cityChosenDoctor = action.payload;
+      },
+      updateFilteredDoctors: (state, action) => {
+        state.filteredDoctors = action.payload;
+      },
+      updateDoctorsSort: (state, action) => {
+        state.sort = action.payload;
+      },
+      updateDoctorsOrder: (state, action) => {
+        state.order = action.payload;
+      },
+
+      updateDoctorsCurrentlyViewedPageNum: (state, action) => {
+        state.currentlyViewedPageNum = action.payload;
+      },
+
+      updateTotalDoctors: (state, action) => {
+        state.totalDoctors = action.payload;
+      },
+
+      updateNumOfDoctorsPerPage: (state, action) => {
+        state.numOfDoctorsPerPage = action.payload;
+      },
+      updateDoctors: (state, action) => {
+        state.doctors = action.payload;
+      },
+      updateDoctorsTotalPage: (state, action) => {
+        state.totalPage = action.payload;
+      },
+    },
+  });
+
+  export const {
+    updateCityChosenDoctor,
+    updateDoctors,
+    updateDoctorsCurrentlyViewedPageNum,
+    updateDoctorsOrder,
+    updateDoctorsSort,
+    updateFilteredDoctors,
+    updateHospitalChosen,
+    updateNumOfDoctorsPerPage,
+    updateSpecialityChosen,
+    updateTotalDoctors,
+    updateDoctorsTotalPage,
+  } = doctorsSlice.actions;
+
+  export default doctorsSlice.reducer;
+
+```
+
+### 4. Create Hospitals Slice (store/hospitalsSlice.js)
+
+```bash
+    import { createSlice } from "@reduxjs/toolkit";
+
+  // Define the initial state using that type
+  const initialState = {
+    hospitals: [],
+    hospitalOptions: [],
+    totalPage: undefined,
+    currentlyViewedPageNum: 1,
+    numOfHospitalsPerPage: 6,
+    cityChosenHospital: "",
+    filteredHospitals: undefined,
+    sort: "Name",
+    order: "A-Z",
+    totalHospitals: undefined,
+  };
+
+  export const hospitalsSlice = createSlice({
+    name: "hospitals",
+    initialState,
+    reducers: {
+      updateHospitals: (state, action) => {
+        state.hospitals = action.payload;
+      },
+      updateHospitalOptions: (state, action) => {
+        state.hospitalOptions = action.payload;
+      },
+      updateCityChosenHospital: (state, action) => {
+        state.cityChosen = action.payload;
+      },
+      updateFilteredHospitals: (state, action) => {
+        state.filteredHospitals = action.payload;
+      },
+      updateHospitalsSort: (state, action) => {
+        state.sort = action.payload;
+      },
+      updateHospitalsOrder: (state, action) => {
+        state.order = action.payload;
+      },
+      updateHospitalsCurrentlyViewedPageNum: (state, action) => {
+        state.currentlyViewedPageNum = action.payload;
+      },
+
+      updateTotalHospitals: (state, action) => {
+        state.totalHospitals = action.payload;
+      },
+
+      updateNumOfHospitalsPerPage: (state, action) => {
+        state.numOfHospitalsPerPage = action.payload;
+      },
+
+      updateHospitalsTotalPage: (state, action) => {
+        state.totalPage = action.payload;
+      },
+    },
+  });
+
+  export const {
+    updateHospitals,
+    updateHospitalOptions,
+    updateCityChosenHospital,
+    updateFilteredHospitals,
+    updateHospitalsCurrentlyViewedPageNum,
+    updateHospitalsOrder,
+    updateHospitalsSort,
+    updateTotalHospitals,
+    updateHospitalsTotalPage,
+    updateNumOfHospitalsPerPage,
+  } = hospitalsSlice.actions;
+
+  export default hospitalsSlice.reducer;
+
+```
+
+### 5. Create ProvidersSearch Slice (store/providersSearchSlice.js)
+
+```bash
+  import { createSlice } from "@reduxjs/toolkit";
+
+  // Define the initial state using that type
+  const initialState = {
+    provider: undefined,
+    specialitySearched: undefined,
+    citySearched: undefined,
+  };
+
+  export const providersSearchSlice = createSlice({
+    name: "providersSearch",
+    initialState,
+    reducers: {
+      updateProvider: (state, action) => {
+        state.provider = action.payload;
+      },
+      updateSpecialitySearched: (state, action) => {
+        state.specialitySearched = action.payload;
+      },
+      updateCitySearched: (state, action) => {
+        state.citySearched = action.payload;
+      },
+    },
+  });
+
+  export const { updateCitySearched, updateProvider, updateSpecialitySearched } =
+    providersSearchSlice.actions;
+
+  export default providersSearchSlice.reducer;
+
+```
+
+### 6. updated store.js
+
+```bash
+  import { configureStore } from "@reduxjs/toolkit";
+  import doctorsReducer from "./doctorsSlice";
+  import hospitalsReducer from "./hospitalsSlice";
+  import providersSearchReducer from "./providersSearchSlice";
+
+  export const store = configureStore({
+    reducer: {
+      doctors: doctorsReducer,
+      hospitals: hospitalsReducer,
+      providersSearch: providersSearchReducer,
+    },
+  });
+
+  export default store;
+
+
+```
+
+### 7. home/SearchProviders.jsx
+
+```bash
+
+  import { useCallback, useState } from "react";
+  import { useNavigate } from "react-router-dom"; // Change here for React Router
+  import { filterCityOptions, filterSpecialityOptions } from "../../utils/data";
+  import { LiaHospitalSymbolSolid } from "react-icons/lia";
+  import { FaUserDoctor } from "react-icons/fa6";
+  import { IoMdSearch } from "react-icons/io";
+  import { FaCity } from "react-icons/fa";
+  import Button from "../global/Button";
+  import { useDispatch, useSelector } from "react-redux";
+  import ProviderSearchInput from "./ProviderSearchInput";
+  import FilterSelect from "../filter/FilterSelect";
+  import { updateCityChosenHospital } from "../../store/hospitalsSlice";
+  import {
+    updateCityChosenDoctor,
+    updateSpecialityChosen,
+  } from "../../store/doctorsSlice";
+  import {
+    updateCitySearched,
+    updateSpecialitySearched,
+  } from "../../store/providersSearchSlice";
+
+  export default function SearchProviders() {
+    const navigate = useNavigate(); // Change from useRouter to useNavigate
+    const dispatch = useDispatch();
+
+    const { citySearched, specialitySearched } = useSelector(
+      (store) => store.providersSearch
+    );
+
+    const [inputProvider, setInputProvider] = useState("");
+
+    const updateInputProvider = (val) => {
+      setInputProvider(val);
+    };
+
+    const filterCity = useCallback(
+      (val) => {
+        if (
+          inputProvider.toLowerCase() === "hospital" ||
+          inputProvider.toLowerCase() === "hospitals"
+        ) {
+          dispatch(updateCityChosenHospital(val));
+        } else {
+          dispatch(updateCityChosenDoctor(val));
+        }
+        dispatch(updateCitySearched(val));
+      },
+      [dispatch, inputProvider]
+    );
+
+    const filterSpeciality = useCallback(
+      (val) => {
+        dispatch(updateSpecialityChosen(val));
+        dispatch(updateSpecialitySearched(val));
+      },
+      [dispatch]
+    );
+
+    const search_inputs = [
+      {
+        id: 1,
+        icon: <LiaHospitalSymbolSolid />,
+        placeholder: "Ex. Doctor, Hospital",
+        onChangeFunc: updateInputProvider,
+        filterType: "input_search",
+      },
+      {
+        id: 4,
+        icon: <FaCity />,
+        categoryTitle: "City",
+        categoryValue: citySearched,
+        categoryValues: filterCityOptions,
+        filterFn: filterCity,
+        filterType: "select one",
+      },
+      {
+        id: 5,
+        icon: <FaUserDoctor />,
+        categoryTitle: "Speciality",
+        categoryValue: specialitySearched,
+        categoryValues: filterSpecialityOptions,
+        filterFn: filterSpeciality,
+        filterType: "select one",
+      },
+    ];
+
+    const handleSearch = () => {
+      if (inputProvider && inputProvider.length >= 5) {
+        if (
+          inputProvider.toLowerCase() === "hospital" ||
+          inputProvider.toLowerCase() === "hospitals"
+        ) {
+          navigate("/hospitals"); // Change from router.push to navigate
+          if (citySearched === "") {
+            dispatch(updateCityChosenHospital(""));
+          }
+        } else if (
+          inputProvider.toLowerCase() === "doctor" ||
+          inputProvider.toLowerCase() === "doctors"
+        ) {
+          navigate("/doctors"); // Change from router.push to navigate
+          if (citySearched === "") {
+            dispatch(updateCityChosenDoctor(""));
+          }
+        }
+      } else if (
+        !inputProvider ||
+        inputProvider === "" ||
+        inputProvider.length < 5
+      ) {
+        if (
+          (specialitySearched && specialitySearched !== "") ||
+          (citySearched && citySearched !== "")
+        ) {
+          navigate("/find-doctors"); // Change from router.push to navigate
+          if (citySearched === "") {
+            dispatch(updateCityChosenDoctor(""));
+          }
+          if (specialitySearched === "") {
+            dispatch(updateSpecialityChosen(""));
+          }
+        }
+      }
+
+      setInputProvider("");
+    };
+
+    return (
+      <div className="bg-white shadow-lg rounded-md p-4 md:p-5 flex flex-col gap-5 md:gap-6 xl:gap-8 translate-y-1/2">
+        {/*search by input*/}
+        <div className="flex flex-col lg:flex-row gap-2">
+          <div className="flex flex-col gap-2 lg:flex-row md:items-center flex-1">
+            {search_inputs.map((input) => {
+              const {
+                icon,
+                id,
+                placeholder,
+                onChangeFunc,
+                filterType,
+                categoryValues,
+                categoryValue,
+                filterFn,
+              } = input;
+
+              if (filterType === "input_search")
+                return (
+                  <ProviderSearchInput
+                    key={id}
+                    icon={icon}
+                    placeholder={placeholder}
+                    onChangeFunc={onChangeFunc}
+                    className="flex-1"
+                  />
+                );
+              else if (filterType === "select one")
+                return (
+                  <FilterSelect
+                    key={id}
+                    options={categoryValues}
+                    categoryValue={categoryValue}
+                    updateCategoryValue={filterFn}
+                    icon={icon}
+                    className="flex-1"
+                  />
+                );
+            })}
+          </div>
+
+          <Button className="flex items-center gap-2 sm:max-w-36" onClickFn={handleSearch}>
+            <IoMdSearch className="text-xl" />
+            <span>Search</span>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+```
+
+### 8. home/ProviderSearchInput.jsx
+
+```bash
+  /* eslint-disable react/prop-types */
+
+  const ProviderSearchInput = ({
+    icon,
+    placeholder,
+    onChangeFunc,
+    className,
+  }) => {
+    return (
+      <div
+        className={` flex items-center gap-2 px-5 py-2 rounded-md shadow-md h-fit text-black w-full shrink-0 ${className}`}
+      >
+        <span className="text-sm text-black/70">{icon}</span>
+        <input
+          className=" text-sm w-full placeholder:text-black/70 outline-none bg-transparent"
+          type="text"
+          placeholder={placeholder}
+          onChange={(e) => {
+            onChangeFunc(e.target.value);
+          }}
+        />
+      </div>
+    );
+  };
+
+  export default ProviderSearchInput;
+
+```
+
+### 9. home/Hero.jsx
+
+```bash
+  import Wrapper from "../global/Wrapper";
+  import Img from "../global/Img";
+  import Button from "../global/Button";
+  import SearchProviders from "./SearchProviders";
+  import { Link } from "react-router-dom";
+
+  export default function Hero() {
+    return (
+      <Wrapper className="relative pt-8 sm:pt-10 md:pt-12 lg:pt-14 xl:pt-16 ">
+        <div className="flex gap-3 items-center justify-between">
+          <div className="relative z-10 flex flex-col gap-3 sm:gap-4 md:gap-5 lg:gap-6 xl:gap-8">
+            <div className=" flex flex-col gap-1 lg:gap-2">
+              <h1 className=" font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-tight">
+                <span className=" text-primary">Doctor</span>{" "}
+                <span className="  text-white">Consultation</span>
+              </h1>
+              <p className=" text-sm md:text-base xl:text-lg max-w-[715px] text-white">
+                Connect instantly with a specialist available 24/7 or opt for an
+                in-person visit with a specific doctor.
+              </p>
+            </div>
+
+            <Link to={"/doctors"} className=" w-fit">
+              <Button>Consult Now</Button>
+            </Link>
+          </div>
+        </div>
+
+        <img
+          className="absolute top-0 left-0 w-full h-full object-cover object-center"
+          src="/images/hero.jpg"
+          alt="hero-img"
+        />
+
+        {/* <!-- Overlay with primary color shade --> */}
+        <div className="absolute top-0 left-0 bottom-0 right-0 inset-0 bg-primary/20"></div>
+
+        {/*search doctors*/}
+        <SearchProviders />
+      </Wrapper>
+    );
+  }
+
+```
+
+### 10. global/Img.jsx
+
+```bash
+  /* eslint-disable react/prop-types */
+
+  export default function Img({ img_url, alt, width, height, className }) {
+    return (
+      <img
+        src={img_url}
+        alt={alt}
+        width={width}
+        height={height}
+        className={` object-center object-cover ${className}`}
+      />
+    );
+  }
+
+```
+
+### 11. global/Loading.jsx
+
+```bash
+  const Loading = () => {
+    return (
+      <div className='dots-container'>
+        <div className='dot'></div>
+        <div className='dot'></div>
+        <div className='dot'></div>
+        <div className='dot'></div>
+        <div className='dot'></div>
+      </div>
+    );
+  };
+
+  export default Loading;
+
+```
+
+### 12. global/Pagination.jsx
+
+```bash
+  /* eslint-disable react/prop-types */
+  import React from "react";
+
+  const Pagination = ({
+    totalItems,
+    page,
+    numOfItemsPerPage,
+    onPageChange,
+    className,
+    totalPage,
+  }) => {
+    const pageNumbers = [];
+    if (totalPage <= 8) {
+      for (let i = 1; i <= totalPage; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      if (page <= 4) {
+        for (let i = 1; i <= 5; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push("...");
+        pageNumbers.push(totalPage - 1);
+        pageNumbers.push(totalPage);
+      } else if (page >= totalPage - 3) {
+        pageNumbers.push(1);
+        pageNumbers.push(2);
+        pageNumbers.push("...");
+        for (let i = totalPage - 4; i <= totalPage; i++) {
+          pageNumbers.push(i);
+        }
+      } else {
+        pageNumbers.push(1);
+        pageNumbers.push(2);
+        pageNumbers.push("...");
+        for (let i = page - 1; i <= page + 1; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push("...");
+        pageNumbers.push(totalPage - 1);
+        pageNumbers.push(totalPage);
+      }
+    }
+
+    const handlePageClick = (pageNumber) => {
+      if (typeof pageNumber === "number") {
+        onPageChange(pageNumber);
+      }
+    };
+
+    if (totalPage > 1)
+      return (
+        <div
+          className={`flex justify-center items-center gap-1 sm:gap-2 text-sm sm:text-base ${className}`}
+        >
+          <button
+            className={`${
+              page === 1 ? "pointer-events-none bg-primary/65" : "bg-primary"
+            }  text-white px-3 sm:px-4 py-1 sm:py-2 rounded-md`}
+            onClick={() => onPageChange(page - 1)}
+            disabled={page === 1}
+          >
+            Prev
+          </button>
+
+          <div className=" flex gap-[2px] sm:gap-1 items-center">
+            {pageNumbers.map((pageNum, index) => (
+              <React.Fragment key={index}>
+                {pageNum === "..." ? (
+                  <span className="grid items-center justify-center md:w-[40px] md:h-[40px] w-[30px] h-[30px] sm:w-[35px] sm:h-[35px]">
+                    {pageNum}
+                  </span>
+                ) : (
+                  <button
+                    className={`${
+                      pageNum === page
+                        ? "bg-primary text-white"
+                        : "text-primary hover:bg-primary/25"
+                    } grid items-center justify-center md:w-[40px] md:h-[40px] w-[30px] h-[30px] sm:w-[35px] sm:h-[35px] rounded-md`}
+                    onClick={() => handlePageClick(pageNum)}
+                  >
+                    {pageNum}
+                  </button>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+
+          <button
+            className={`${
+              page === totalPage
+                ? "pointer-events-none bg-primary/65"
+                : "bg-primary"
+            } bg-primary text-white px-3 sm:px-4 py-1 sm:py-2 rounded-md`}
+            onClick={() => onPageChange(page + 1)}
+            disabled={page === totalPage}
+          >
+            Next
+          </button>
+        </div>
+      );
+  };
+
+  export default Pagination;
+
+```
+
+### 13. Install react-slick
+
+```bash
+  npm install react-slick slick-carousel
+```
+
+### 14. home/DoctorsCarousel.jsx
+
+```bash
+  /* eslint-disable react/prop-types */
+  import { useEffect, useState } from "react";
+  import { Link } from "react-router-dom";
+  import { IoIosArrowForward } from "react-icons/io";
+  import Slider from "react-slick";
+  import "slick-carousel/slick/slick.css";
+  import "slick-carousel/slick/slick-theme.css";
+  import Loading from "../global/Loading";
+  import DoctorCard from "../doctors/DoctorCard";
+  import { doctors_data } from "../../utils/data";
+  import Wrapper from "../global/Wrapper";
+
+  // Custom Arrow Components
+  const NextArrow = ({ onClick }) => (
+    <div
+      className="slick-arrow slick-next !text-primary !bg-primary rounded-full "
+      onClick={onClick}
+    >
+      <i className="fas fa-chevron-right"></i>
+    </div>
+  );
+
+  const PrevArrow = ({ onClick }) => (
+    <div
+      className="slick-arrow slick-prev !text-primary !bg-primary rounded-full "
+      onClick={onClick}
+    >
+      <i className="fas fa-chevron-left"></i>
+    </div>
+  );
+
+  const DoctorsCarousel = () => {
+    const settings = {
+      dots: true,
+      infinite: false,
+      speed: 500,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      autoplay: true, // Enable autoplay
+      autoplaySpeed: 3000, // Set autoplay speed (ms)
+      arrows: true,
+      nextArrow: <NextArrow />, // Custom next arrow
+      prevArrow: <PrevArrow />, // Custom previous arrow
+      responsive: [
+        {
+          breakpoint: 768, // Adjust breakpoint for responsive behavior
+          settings: {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+          },
+        },
+        {
+          breakpoint: 992, // Adjust breakpoint for responsive behavior
+          settings: {
+            slidesToShow: 2,
+            slidesToScroll: 1,
+          },
+        },
+        {
+          breakpoint: 1200, // Adjust breakpoint for responsive behavior
+          settings: {
+            slidesToShow: 3,
+            slidesToScroll: 1,
+          },
+        },
+        {
+          breakpoint: 1800, // Adjust breakpoint for responsive behavior
+          settings: {
+            slidesToShow: 4,
+            slidesToScroll: 1,
+          },
+        },
+      ],
+    };
+
+    const [doctors, setDoctors] = useState(doctors_data);
+
+    const fetchDoctors = async () => {
+      try {
+        //   const res = await apiRequest({
+        //     url: "/doctors",
+        //     method: "GET",
+        //   });
+        // console.log(res);
+        //   setDoctors(res.data);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    useEffect(() => {
+      fetchDoctors();
+    }, []);
+
+    return (
+      <Wrapper className=" py-8 pb-20 mt-20">
+        <div className=" mx-auto flex flex-col gap-5 2xl:gap-10 py-6 bg-Background">
+          <div className="flex sm:flex-row flex-col items-center justify-between ">
+            <p className="font-bold sm:text-2xl text-xl  text-primary">
+              {" "}
+              Doctors Nearby
+            </p>
+            <Link to={"/doctors"}>
+              <button className="hover:underline text-primary flex flex-row items-center ">
+                Browse All doctors <IoIosArrowForward className=" text-lg" />{" "}
+              </button>
+            </Link>
+          </div>
+        </div>
+        <div className="flex sm:flex-row flex-col gap-4 sm:gap-8 justify-center"></div>
+
+        {doctors.length <= 0 ? (
+          <div className="py-10">
+            <Loading />
+          </div>
+        ) : (
+          <Slider {...settings} className="">
+            {doctors.slice(0, 6).map((doctor) => {
+              const { id } = doctor;
+              return <DoctorCard key={id} doctor={doctor} />;
+            })}
+          </Slider>
+        )}
+
+        {/* <p className='text-center m-10'>O O O O</p> */}
+      </Wrapper>
+    );
+  };
+
+  export default DoctorsCarousel;
+
+```
+
+### 15. Updated pages/Home.jsx
+
+```bash
+  import { useGlobalContext } from "../../context/GlobalContextProvider";
+  import DoctorsCarousel from "../home/DoctorsCarousel";
+  import Hero from "../home/Hero";
+
+  export default function Home() {
+    const { user, login, logout } = useGlobalContext();
+
+    return (
+      <main>
+        <Hero />
+        <DoctorsCarousel />
+      </main>
+    );
+  }
+
+```
+
+### 16. Updated index.css
+
+```bash
+  :root {
+  font-family: Inter, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+a {
+  font-weight: 500;
+  text-decoration: inherit;
+}
+
+/* #18171D #212121 */
+li:hover {
+  font-weight: 700;
+  color: #1676cc;
+}
+
+body {
+  box-sizing: border-box;
+}
+
+.slider {
+  position: relative;
+  width: 200px;
+}
+
+.slider__track,
+.slider__range {
+  border-radius: 3px;
+  height: 5px;
+  position: absolute;
+}
+
+.slider__track {
+  background-color: #ced4da;
+  width: 100%;
+  z-index: 1;
+}
+
+.slider__range {
+  background-color: #9fe5e1;
+  z-index: 2;
+}
+
+/* Removing the default appearance */
+.thumb,
+.thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.thumb {
+  pointer-events: none;
+  position: absolute;
+  height: 0;
+  width: 160px;
+  outline: none;
+}
+
+.thumb--zindex-3 {
+  z-index: 3;
+}
+
+.thumb--zindex-4 {
+  z-index: 4;
+}
+
+/* For Chrome browsers */
+.thumb::-webkit-slider-thumb {
+  background-color: #220f77;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 0 1px 1px #ced4da;
+  cursor: pointer;
+  height: 18px;
+  width: 18px;
+  margin-top: 4px;
+  pointer-events: all;
+  position: relative;
+}
+
+/* For Firefox browsers */
+.thumb::-moz-range-thumb {
+  background-color: #f1f5f7;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 0 1px 1px #ced4da;
+  cursor: pointer;
+  height: 18px;
+  width: 18px;
+  margin-top: 4px;
+  pointer-events: all;
+  position: relative;
+}
+
+.dots-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.dot {
+  height: 12px;
+  width: 12px;
+  margin-right: 10px;
+  border-radius: 10px;
+  background-color: #fff;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.dot:last-child {
+  margin-right: 0;
+}
+
+.dot:nth-child(1) {
+  animation-delay: -0.3s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: -0.1s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.1s;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    background-color: #b3d4fc;
+    box-shadow: 0 0 0 0 rgba(178, 212, 252, 0.7);
+  }
+
+  50% {
+    transform: scale(1.2);
+    background-color: #4b79e4;
+    box-shadow: 0 0 0 10px rgba(178, 212, 252, 0);
+  }
+
+  100% {
+    transform: scale(0.8);
+    background-color: #2584f8;
+    box-shadow: 0 0 0 0 rgba(178, 212, 252, 0.7);
+  }
+}
+
+.padding {
+  @apply px-6 md:px-8 xl:px-10;
+}
+
+.slick-dots li button:before {
+  @apply !text-primary;
+}
+
+
+```
+
+### 17. Updated App.css
+
+```bash
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+
+  /*section vertical padding*/
+  .section_vp {
+    @apply py-6 sm:py-8 md:py-10 lg:py-12 xl:py-14 2xl:py-16;
+  }
+  .section_vp_admin {
+    @apply py-2 sm:py-3 md:py-4 lg:py-5 xl:py-6 2xl:py-8;
+  }
+
+
+```
+
+### 18. Updated doctors/DoctorCard.jsx
+
+```bash
+    /* eslint-disable react/prop-types */
+
+  import { Link } from "react-router-dom";
+  import Button from "../global/Button";
+
+  export default function DoctorCard({ doctor, className }) {
+    const { name, image, location, speciality, rating, consultationFee, id } =
+      doctor;
+
+    return (
+      <div className={`mb-4 ${className}`}>
+        <div className=" m-2 bg-white rounded-lg shadow-lg">
+          <div className="flex items-center p-4">
+            <img
+              className="w-24 h-24 rounded-full object-cover"
+              src={image}
+              alt={name}
+            />
+            <div className="ml-4">
+              <h3 className="text-xl font-semibold">{name}</h3>
+              <p className="text-gray-500">{speciality}</p>
+            </div>
+          </div>
+          <div className="p-4 border-t border-gray-200">
+            <p className="text-gray-600">Location: {location}</p>
+          </div>
+          <div className="p-4 border-t border-gray-200 flex justify-between items-center">
+            <div>
+              <p className="text-gray-700">Rating: {rating} / 5</p>
+            </div>
+            <p className="text-green-600 font-semibold">Fee: {consultationFee}</p>
+          </div>
+
+          <div className=" p-4 pt-0">
+            <Link to={`/booking/${id}`} className="">
+              <Button>Book appointment</Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+```
+
+### 19. Updated doctors/DoctorFilter.jsx
+
+```bash
+  /* eslint-disable react/prop-types */
+  import { useCallback, useEffect, useState } from "react";
+  import { useDispatch, useSelector } from "react-redux"; // Use standard
+
+  import { FaCity, FaUserDoctor } from "react-icons/fa6";
+  import { FaHospitalSymbol } from "react-icons/fa";
+  import { IoFilter } from "react-icons/io5";
+  import {
+    doctors_data,
+    filterCityOptions,
+    filterHospitalOptions,
+    filterSpecialityOptions,
+  } from "../../utils/data";
+  import FilterSelect from "../filter/FilterSelect";
+  import {
+    updateCityChosenDoctor,
+    updateDoctorsOrder,
+    updateDoctorsSort,
+    updateFilteredDoctors,
+    updateHospitalChosen,
+    updateSpecialityChosen,
+  } from "../../store/doctorsSlice";
+
+  export default function DoctorFilter({
+    currentlyViewedDoctorsLastIndex,
+    currentlyViewedDoctorsStartIndex,
+  }) {
+    const dispatch = useDispatch(); // Use useDispatch from react-redux
+    const {
+      cityChosen,
+      specialityChosen,
+      hospitalChosen,
+      sort,
+      order,
+      filteredDoctors,
+    } = useSelector((state) => state.doctors); // Use useSelector to get the state
+
+    const [filterDoctorOptions, setFilterDoctorOptions] = useState({});
+    const sortOptions = ["Name", "Speciality", "City"];
+
+    const filterCity = useCallback(
+      (val) => {
+        console.log("called city change");
+
+        dispatch(updateCityChosenDoctor(val));
+      },
+      [dispatch]
+    );
+
+    const filterSpeciality = useCallback(
+      (val) => {
+        dispatch(updateSpecialityChosen(val));
+      },
+      [dispatch]
+    );
+
+    const filterHospital = useCallback(
+      (val) => {
+        dispatch(updateHospitalChosen(val));
+      },
+      [dispatch]
+    );
+
+    const updateSort = (val) => {
+      dispatch(updateDoctorsSort(val));
+    };
+
+    const updateOrder = (val) => {
+      dispatch(updateDoctorsOrder(val));
+    };
+
+    const doctorFilterOptions = [
+      {
+        id: 4,
+        icon: <FaCity />,
+        categoryTitle: "City",
+        categoryValue: cityChosen,
+        categoryValues: filterCityOptions,
+        filterFn: filterCity,
+        filterType: "select one",
+        categoryType: "city",
+      },
+      {
+        id: 5,
+        icon: <FaUserDoctor />,
+        categoryTitle: "Speciality",
+        categoryValue: specialityChosen,
+        categoryValues: filterSpecialityOptions,
+        filterFn: filterSpeciality,
+        filterType: "select one",
+        categoryType: "speciality",
+      },
+      {
+        id: 6,
+        icon: <FaHospitalSymbol />,
+        categoryTitle: "Hospital",
+        categoryValue: hospitalChosen,
+        categoryValues: filterHospitalOptions,
+        filterFn: filterHospital,
+        filterType: "select one",
+        categoryType: "hospital",
+      },
+    ];
+
+    const updateFilterDoctorOptions = useCallback(() => {
+      let duplicateFilterDoctorOptions = { ...filterDoctorOptions };
+      let duplicateFilteredDoctors = [...doctors_data];
+
+      if (cityChosen && cityChosen !== "") {
+        duplicateFilterDoctorOptions.city = cityChosen;
+        duplicateFilteredDoctors = duplicateFilteredDoctors.filter(
+          (doctor) => doctor.location.toLowerCase() == cityChosen.toLowerCase()
+        );
+      } else {
+        delete duplicateFilterDoctorOptions.city;
+      }
+
+      if (specialityChosen && specialityChosen !== "") {
+        duplicateFilterDoctorOptions.speciality = specialityChosen;
+        duplicateFilteredDoctors = duplicateFilteredDoctors.filter(
+          (doctor) =>
+            doctor.speciality.toLowerCase() == specialityChosen.toLowerCase()
+        );
+      } else {
+        delete duplicateFilterDoctorOptions.speciality;
+      }
+
+      if (hospitalChosen && hospitalChosen !== "") {
+        duplicateFilterDoctorOptions.hospital = hospitalChosen;
+        duplicateFilteredDoctors = duplicateFilteredDoctors.filter(
+          (doctor) =>
+            doctor.hospital.toLowerCase() == hospitalChosen.toLowerCase()
+        );
+      } else {
+        delete duplicateFilterDoctorOptions.hospital;
+      }
+
+      if (sort && sort !== "") {
+        duplicateFilterDoctorOptions.sortBy = sort.toLowerCase();
+      } else {
+        delete duplicateFilterDoctorOptions.sortBy;
+      }
+
+      if (order && order !== "") {
+        duplicateFilterDoctorOptions.order =
+          order === "A-Z" ? "asc" : order === "Z-A" ? "desc" : "asc";
+      } else {
+        delete duplicateFilterDoctorOptions.order;
+      }
+
+      dispatch(updateFilteredDoctors(duplicateFilteredDoctors));
+      setFilterDoctorOptions(duplicateFilterDoctorOptions);
+    }, [
+      filterDoctorOptions,
+      cityChosen,
+      specialityChosen,
+      hospitalChosen,
+      sort,
+      order,
+      dispatch,
+    ]);
+
+    useEffect(() => {
+      updateFilterDoctorOptions();
+    }, []);
+
+    useEffect(() => {
+      updateFilterDoctorOptions();
+      console.log("city chosen: ", cityChosen);
+      console.log("speciality: ", specialityChosen);
+    }, [cityChosen, specialityChosen, hospitalChosen, sort, order]);
+
+    if (!filteredDoctors) {
+      return <p>Loading doctors...</p>;
+    }
+
+    return (
+      <div className="flex flex-col gap-4 lg:gap-5">
+        <div className=" flex flex-col gap-3 md:gap-5 lg:flex-row lg:items-center">
+          <div className="text-primary font-semibold flex items-center gap-4 ">
+            <span>Filters</span>
+            <span>
+              <IoFilter />
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-3 md:gap-4 flex-1">
+            {doctorFilterOptions.map((PageFilter) => {
+              const {
+                id,
+                //   filterType,
+                icon,
+                categoryValue,
+                categoryValues,
+                filterFn,
+                categoryType,
+              } = PageFilter;
+
+              return (
+                <FilterSelect
+                  options={categoryValues}
+                  categoryValue={categoryValue}
+                  updateCategoryValue={filterFn}
+                  icon={icon}
+                  key={id}
+                  categoryType={categoryType}
+                  className="w-full md:w-[calc(50%_-_8px)] lg:w-[calc((100%_/_3)_-_(32px_/_3))]"
+                />
+              );
+            })}
+          </div>
+        </div>
+        {/*
+        <FilterByOrderPlusStatistic
+          currentlyViewedItemsLastIndex={currentlyViewedDoctorsLastIndex}
+          currentlyViewedItemsStartIndex={currentlyViewedDoctorsStartIndex}
+          sort={sort}
+          updateSortFunc={updateSort}
+          itemNameFiltered="doctors"
+          items={filteredDoctors}
+          order={order}
+          updateOrderFunc={updateOrder}
+          sortOptions={sortOptions}
+        /> */}
+      </div>
+    );
+  }
+
+
+```
+
+### 20. Updated doctors/FilteredDoctorsList
+
+```bash
+  /* eslint-disable react/prop-types */
+
+import { useDispatch, useSelector } from "react-redux";
+import DoctorCard from "./DoctorCard";
+import { updateDoctorsCurrentlyViewedPageNum } from "../../store/doctorsSlice";
+import Pagination from "../global/Pagination";
+
+export default function FilteredDoctorsList({
+  totalDoctors,
+  page,
+  numOfDoctorsPerPage,
+  onPageChange,
+  totalPage,
+  currentlyViewedDoctorsStartIndex,
+  currentlyViewedDoctorsLastIndex,
+}) {
+  const dispatch = useDispatch();
+  const { filteredDoctors } = useSelector((store) => store.doctors);
+
+  const handlePageChange = (newPage) => {
+    dispatch(updateDoctorsCurrentlyViewedPageNum(newPage));
+    onPageChange(newPage);
+  };
+
+  if (!filteredDoctors) {
+    return <p>Loading doctors...</p>;
+  } else if (filteredDoctors.length === 0) {
+    return <p>No doctors found according to your filters.</p>;
+  } else {
+    return (
+      <div className="flex flex-col gap-5 sm:gap-6 md:gap-7 lg:gap-8 xl:gap-9">
+        <div className="flex flex-wrap gap-4 lg:gap-5">
+          {filteredDoctors
+            .slice(
+              currentlyViewedDoctorsStartIndex,
+              currentlyViewedDoctorsLastIndex
+            )
+            .map((doctor) => (
+              <DoctorCard
+                doctor={doctor}
+                key={doctor.id}
+                className="w-full sm:w-[calc(50%_-_8px)] lg:w-[calc((100%_/_3)_-_(40px_/_3))] xl:w-[calc(25%_-_20px)]"
+              />
+            ))}
+        </div>
+
+        {totalDoctors && totalPage && (
+          <Pagination
+            totalItems={totalDoctors}
+            totalPage={totalPage}
+            numOfItemsPerPage={numOfDoctorsPerPage}
+            page={page}
+            onPageChange={handlePageChange}
+          />
+        )}
+      </div>
+    );
+  }
+}
+
+```

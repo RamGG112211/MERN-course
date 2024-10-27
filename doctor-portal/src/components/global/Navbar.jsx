@@ -8,7 +8,7 @@ import {
   IoHomeOutline,
 } from "react-icons/io5";
 import { AiOutlineMail } from "react-icons/ai";
-import { FaRegCircleUser } from "react-icons/fa6";
+import { FaRegCircleUser, FaUserDoctor } from "react-icons/fa6";
 import { FaHamburger } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 import Button from "./Button";
@@ -88,8 +88,6 @@ export default function Navbar() {
   const location = useLocation();
   const pathname = location.pathname;
 
-  console.log("hellow")
-
   return (
     <>
       <Wrapper className="flex flex-col sm:flex-row gap-1 justify-between py-2 bg-primary text-white text-sm_paragraph">
@@ -114,14 +112,15 @@ export default function Navbar() {
       <Wrapper className=" sticky z-50 top-0 bg-white py-3 flex justify-between items-center gap-2 shadow-md">
         {/* <nav className=""> */}
         <Link to={"/"} className="flex items-center xl:w-[30%]  gap-2">
-          <div className=" p-3 bg-primary w-max rounded-full">
-            <img
+          <div className=" p-3 bg-primary w-max rounded-full text-white text-xl">
+            {/* <img
               src="/images/logo.png"
               alt="Logo"
               width={1024}
               height={1024}
               className=" object-center object-cover w-[35px] h-[35px]"
-            />
+            /> */}
+            <FaUserDoctor />
           </div>
 
           <span className="font-semibold lg:text-xl">Doctor Hub</span>

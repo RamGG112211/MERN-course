@@ -11,6 +11,7 @@ import AdminDoctors from "./components/pages/admin/AdminDoctors";
 import AdminHospitals from "./components/pages/admin/AdminHospitals";
 import AdminDashboard from "./components/pages/admin/AdminDashboard";
 import GlobalContextProvider from "./context/GlobalContextProvider";
+import DoctorBooking from "./components/pages/DoctorBooking";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/doctors" element={<Doctors />} />
           <Route path="/hospitals" element={<Hospitals />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/booking/:id" element={<DoctorBooking />} />
 
           <Route path="admin">
             <Route index element={<AdminDashboard />} />
@@ -31,16 +33,6 @@ function App() {
           </Route>
         </Routes>
       </GlobalContextProvider>
-      
-      <Button
-        className={"px-6"}
-        variant="secondary"
-        onClickFn={() => {
-          console.log("button");
-        }}
-      >
-        <span>Text</span>
-      </Button>
     </BrowserRouter>
   );
 }

@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*section vertical padding*/
+.section_vp {
+  @apply py-6 sm:py-8 md:py-10 lg:py-12 xl:py-14 2xl:py-16;
+}
+.section_vp_admin {
+  @apply py-2 sm:py-3 md:py-4 lg:py-5 xl:py-6 2xl:py-8;
+}
