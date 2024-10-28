@@ -1277,3 +1277,11 @@ router.put("/:id",upload.single('profileImage'), authMiddleware(["Admin", "Docto
 app.use('/uploads', express.static('uploads'));
 
 ```
+
+
+### Video call integration
+
+### 1. install packages
+```bash
+    npm install express twilio dotenv ws
+```

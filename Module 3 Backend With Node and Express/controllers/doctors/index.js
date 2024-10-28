@@ -2,6 +2,8 @@ import Doctor from "../../models/doctors/index.js"; // Doctor model
 import DoctorHospital from "../../models/doctorHospitals/index.js"; // DoctorHospital model
 import Hospital from "../../models/hospitals/index.js"; // Hospital model
 import User from "../../models/users/index.js";
+import bcrypt from "bcryptjs";
+
 export const createDoctor = async (req, res) => {
   const {
     fullName,
@@ -15,21 +17,24 @@ export const createDoctor = async (req, res) => {
   } = req.body;
 
   try {
+    const hashedPassword = await bcrypt.hash(password, 10);
     // Create user
     const newUser = new User({
       fullName,
       email,
-      password, // Make sure to hash the password before saving in a real application
+      password: hashedPassword,
+      role: "Doctor",
     });
     const savedUser = await newUser.save();
 
-    // Create doctor using the new user's _id as user_id
+    // Create doctor with profile image
     const newDoctor = new Doctor({
       user_id: savedUser._id,
       specialization,
       qualification,
       experienceYears,
       clinicAddress,
+      profileImage: req.file ? `/uploads/${req.file.filename}` : "", // Save image path
     });
     const savedDoctor = await newDoctor.save();
 
@@ -52,7 +57,6 @@ export const createDoctor = async (req, res) => {
   }
 };
 
-// Update a doctor and their hospital associations
 export const updateDoctor = async (req, res) => {
   const { id } = req.params;
   const {
@@ -64,16 +68,26 @@ export const updateDoctor = async (req, res) => {
   } = req.body;
 
   try {
+    // Fetch the existing doctor
+    const doctor = await Doctor.findById(id);
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
     // Update doctor details
     const updatedDoctor = await Doctor.findByIdAndUpdate(
       id,
-      { specialization, qualification, experienceYears, clinicAddress },
+      {
+        specialization,
+        qualification,
+        experienceYears,
+        clinicAddress,
+        profileImage: req.file
+          ? `/uploads/${req.file.filename}`
+          : doctor.profileImage, // Update image if uploaded, otherwise retain old one
+      },
       { new: true }
     );
-
-    if (!updatedDoctor) {
-      return res.status(404).json({ message: "Doctor not found" });
-    }
 
     // Update hospital associations
     if (hospitalIds && hospitalIds.length > 0) {

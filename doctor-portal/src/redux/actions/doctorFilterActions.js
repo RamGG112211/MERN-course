@@ -66,3 +66,9 @@ export const updateNumOfDoctorsPerPage = (num) => ({
   type: UPDATE_NUM_OF_DOCTORS_PER_PAGE,
   payload: num,
 });
+
+
+
+///
+ dispatch(updateHospitalChosen("Bir hospital"));
+ dispatch(updateFilteredDoctors([]));

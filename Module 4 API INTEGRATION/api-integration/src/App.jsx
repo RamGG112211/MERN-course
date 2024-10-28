@@ -16,6 +16,9 @@ import LoginPage from "./pages/auth/LoginPage";
 import DoctorSignupPage from "./pages/auth/DoctorSignupPage";
 import HospitalSignupPage from "./pages/auth/HospitalSignupPage";
 import DoctorBooking from "./components/doctors/DoctorBooking";
+import VideoCall from "./components/doctors/VideoCall";
+import AppointmentDetails from "./components/patients/AppointmentDetails";
+import Home from "./pages/Home";
 
 const App = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -57,13 +60,17 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<p>Home</p>} />
+        <Route path="/" element={<Home />} />
         <Route path="/user/signup" element={<SignupPage />} />
         <Route path="/user/login" element={<LoginPage />} />
         <Route path="/doctor/:id" element={<DoctorBooking />} />
         <Route path="/doctor/signup" element={<DoctorSignupPage />} />
-
         <Route path="/hospital/signup" element={<HospitalSignupPage />} />
+
+        <Route path="/booking/:id" element={<DoctorBooking />} />
+
+        <Route path="/appointments/:id" element={<AppointmentDetails />} />
+        <Route path="/video-call" element={<VideoCall />} />
 
         <Route
           path="/admin"

@@ -1194,3 +1194,12 @@ npm install react-toastify
 ```bash
         <Route path="/doctor/:id" element={<DoctorBooking />} />
 ```
+
+
+### Video call integration
+
+### 1. install packages
+```bash
+      npm install twilio-video socket.io-client react-icons
+
+```
