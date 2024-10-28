@@ -1,6 +1,7 @@
 import User from "../../models/users/index.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import Doctor from "../../models/doctors/index.js";
 
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
@@ -36,6 +37,17 @@ export const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "3d" }
     );
+
+    // Check if the role is Doctor and populate the doctor object
+    if (user.role === "Doctor") {
+      const doctor = await Doctor.findOne({ user_id: user._id }).populate(
+        "user_id"
+      );
+      if (!doctor) return res.status(404).json({ message: "Doctor not found" });
+      return res.json({ token, user: doctor }); // Return the doctor object
+    }
+
+    // If the role is not Doctor, return the user object
     res.json({ token, user });
   } catch (err) {
     res.status(500).json({ message: err.message });
