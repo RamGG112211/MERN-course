@@ -57,10 +57,10 @@ const VideoCall = () => {
   };
 
   const setupWebSocket = () => {
-    // ws.current = new WebSocket(
-    //   "wss://mern-course-xg0p.onrender.com/websockets"
-    // );
-    ws.current = new WebSocket("ws://localhost:3001/websockets");
+    ws.current = new WebSocket(
+      "wss://mern-course-xg0p.onrender.com/websockets"
+    );
+    // ws.current = new WebSocket("ws://localhost:3001/websockets");
 
     ws.current.onopen = () => {
       sendMessage(JSON.stringify({ type: "register", userId }));
