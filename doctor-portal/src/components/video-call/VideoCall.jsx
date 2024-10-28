@@ -1,6 +1,10 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState, useRef, useCallback } from "react";
-import { connect, createLocalTracks } from "twilio-video";
+import {
+  connect,
+  createLocalTracks,
+  createLocalVideoTrack,
+} from "twilio-video";
 import { useLocation } from "react-router-dom";
 import {
   BsFillMicMuteFill,
@@ -53,21 +57,24 @@ const VideoCall = () => {
   };
 
   const setupWebSocket = () => {
-    ws.current = new WebSocket(
-      "wss://mern-course-xg0p.onrender.com/websockets"
-    );
-    // ws.current = new WebSocket("ws://localhost:3001/websockets");
+    // ws.current = new WebSocket(
+    //   "wss://mern-course-xg0p.onrender.com/websockets"
+    // );
+    ws.current = new WebSocket("ws://localhost:3001/websockets");
 
     ws.current.onopen = () => {
       sendMessage(JSON.stringify({ type: "register", userId }));
     };
     ws.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
+      console.log("message", message);
+      
       if (message.type === "incoming_call") {
         dispatch(updateIncomingCall(true));
 
         //for callee to join room
         joinRoom(message.roomName, message.token);
+        console.log("someone is calling...");
       }
     };
 
@@ -108,35 +115,36 @@ const VideoCall = () => {
         console.log("roomName", roomName);
         console.log("token", token);
 
-        const localTracks = await createLocalTracks({
-          video: true,
-          audio: true,
-        });
+        // const localTracks = await createLocalTracks({
+        //   video: true,
+        //   audio: true,
+        // });
 
-        const room = await connect(token, {
+        await connect(token, {
           name: roomName,
-          tracks: localTracks,
-          // mediaRegion: "jp1", // Set to India (closest to Nepal)
-          // logLevel: "debug", // Enable detailed logging
+          audio: true,
+          video: { width: 640 },
+        }).then((room) => {
+          // console.log(`Connected to Room: ${room.name}`);
+          // console.log("room", room);
+          setRoom(room);
+          // room.participants.forEach(handleParticipantConnected);
+          room.on("participantConnected", handleParticipantConnected);
+          room.on("participantDisconnected", handleParticipantDisconnected);
         });
 
-        console.log("localTracks", localTracks);
-
-        console.log("localVideoRef", localVideoRef);
-
+        createLocalVideoTrack().then((track) => {
+          if (localVideoRef.current)
+            localVideoRef.current.appendChild(track.attach());
+        });
         // Only run if localTracks and ref are ready
-        if (localTracks && localVideoRef.current) {
-          localTracks.forEach((track) => {
-            if (track.kind === "video") {
-              localVideoRef.current.appendChild(track.attach());
-            }
-          });
-        }
-
-        setRoom(room);
-        room.participants.forEach(handleParticipantConnected);
-        room.on("participantConnected", handleParticipantConnected);
-        room.on("participantDisconnected", handleParticipantDisconnected);
+        // if (localTracks && localVideoRef.current) {
+        //   localTracks.forEach((track) => {
+        //     if (track.kind === "video") {
+        //       localVideoRef.current.appendChild(track.attach());
+        //     }
+        //   });
+        // }
       } catch (error) {
         console.error("Error joining the room:", error);
       }
@@ -151,6 +159,10 @@ const VideoCall = () => {
         const trackElement = publication.track.attach();
         remoteVideoRef.current.appendChild(trackElement);
       }
+    });
+
+    participant.on("trackSubscribed", (track) => {
+      remoteVideoRef.current.appendChild(track.attach());
     });
   };
 

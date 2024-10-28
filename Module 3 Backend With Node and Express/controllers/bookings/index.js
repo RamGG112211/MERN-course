@@ -3,6 +3,19 @@ import Doctor from "../../models/doctors/index.js"; // Doctor model
 import User from "../../models/users/index.js"; // User model
 import twilio from "twilio";
 import { clients } from "../../server.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const twilioClient = twilio(
+  process.env.TWILIO_API_KEY,
+  process.env.TWILIO_API_SECRET,
+  { accountSid: process.env.TWILIO_ACCOUNT_SID }
+);
+
+// Initialize Twilio Access Token
+const AccessToken = twilio.jwt.AccessToken;
+const VideoGrant = AccessToken.VideoGrant;
 
 // Create a new booking
 export const createBooking = async (req, res) => {
@@ -106,6 +119,45 @@ export const getAllBookings = async (req, res) => {
   }
 };
 
+const findOrCreateRoom = async (roomName) => {
+  try {
+    // see if the room exists already. If it doesn't, this will throw
+    // error 20404.
+    await twilioClient.video.v1.rooms(roomName).fetch();
+  } catch (error) {
+    // the room was not found, so create it
+    if (error.code == 20404) {
+      await twilioClient.video.v1.rooms.create({
+        uniqueName: roomName,
+        type: "go",
+      });
+    } else {
+      // let other errors bubble up
+      throw error;
+    }
+  }
+};
+
+const getAccessToken = (roomName, identity) => {
+  // create an access token
+  const token = new AccessToken(
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_API_KEY,
+    process.env.TWILIO_API_SECRET,
+    // generate a random unique identity for this participant
+    { identity }
+  );
+  // create a video grant for this specific room
+  const videoGrant = new VideoGrant({
+    room: roomName,
+  });
+
+  // add the video grant
+  token.addGrant(videoGrant);
+  // serialize the token and return it
+  return token.toJwt();
+};
+
 export const videoCall = async (req, res) => {
   const { user_id, doctor_id, identity } = req.body;
 
@@ -128,35 +180,45 @@ export const videoCall = async (req, res) => {
       return res.status(400).json({ message: "Identity is required" });
     }
 
-    // Initialize Twilio Access Token
-    const AccessToken = twilio.jwt.AccessToken;
-    const VideoGrant = AccessToken.VideoGrant;
+    // find or create a room with the given roomName
+    findOrCreateRoom(roomName);
 
-    const token = new AccessToken(
-      process.env.TWILIO_ACCOUNT_SID,
-      process.env.TWILIO_API_KEY,
-      process.env.TWILIO_API_SECRET,
-      { identity }
+    // generate an Access Token for a participant in this room
+    const token = getAccessToken(roomName, identity);
+
+    console.log(
+      " caller id: ",
+      user_id,
+      " callee id: ",
+      doctor_id,
+      "identity",
+      identity
     );
 
-    const videoGrant = new VideoGrant({ room: roomName });
-    token.addGrant(videoGrant);
+    console.log("booking", booking);
 
     // Notify the doctor/patient of the incoming call via WebSocket
     const recipientId =
-      identity === booking.user_id ? booking.doctor_id : booking.user_id;
+      identity.toString() === booking.user_id.toString()
+        ? booking.doctor_id.toString()
+        : booking.user_id.toString();
+
+    console.log("recipientId", recipientId);
+
+    console.log("clients", clients);
+
     if (clients[recipientId]) {
       clients[recipientId].send(
         JSON.stringify({
           type: "incoming_call",
           roomName,
           caller: identity,
-          token: token.toJwt(),
+          token: token,
         })
       );
     }
 
-    return res.json({ token: token.toJwt(), roomName });
+    return res.json({ token: token, roomName });
   } catch (error) {
     console.error("Error in video call:", error);
     return res.status(500).json({ message: "Server error" });
