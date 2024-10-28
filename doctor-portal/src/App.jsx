@@ -8,10 +8,10 @@ import ContactUs from "./pages/ContactUs";
 import DoctorBooking from "./pages/DoctorBooking";
 import Doctors from "./pages/Doctors";
 import LoadUserDetails from "./components/global/LoadUserDetails";
-import SignupPage from "../../Module 4 API INTEGRATION/api-integration/src/pages/auth/SignupPage";
-import LoginPage from "../../Module 4 API INTEGRATION/api-integration/src/pages/auth/LoginPage";
-import DoctorSignupPage from "../../Module 4 API INTEGRATION/api-integration/src/pages/auth/DoctorSignupPage";
-import HospitalSignupPage from "../../Module 4 API INTEGRATION/api-integration/src/pages/auth/HospitalSignupPage";
+import SignupPage from "./pages/auth/SignupPage";
+import LoginPage from "./pages/auth/LoginPage";
+import DoctorSignupPage from "./pages/auth/DoctorSignupPage";
+import HospitalSignupPage from "./pages/auth/HospitalSignupPage";
 
 function App() {
   return (
