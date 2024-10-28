@@ -128,7 +128,7 @@ const VideoCall = () => {
           // console.log(`Connected to Room: ${room.name}`);
           // console.log("room", room);
           setRoom(room);
-          // room.participants.forEach(handleParticipantConnected);
+          room.participants.forEach(handleParticipantConnected);
           room.on("participantConnected", handleParticipantConnected);
           room.on("participantDisconnected", handleParticipantDisconnected);
         });
