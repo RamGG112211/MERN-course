@@ -128,18 +128,18 @@ export const videoCall = async (req, res) => {
       return res.status(400).json({ message: "Identity is required" });
     }
 
-    // Generate Twilio Access Token for Video
-    const token = new twilio.jwt.AccessToken(
+    // Initialize Twilio Access Token
+    const AccessToken = twilio.jwt.AccessToken;
+    const VideoGrant = AccessToken.VideoGrant;
+
+    const token = new AccessToken(
       process.env.TWILIO_ACCOUNT_SID,
       process.env.TWILIO_API_KEY,
       process.env.TWILIO_API_SECRET,
       { identity }
     );
 
-    token.identity = identity;
-    const videoGrant = new twilio.jwt.AccessToken.VideoGrant({
-      room: roomName,
-    });
+    const videoGrant = new VideoGrant({ room: roomName });
     token.addGrant(videoGrant);
 
     // Notify the doctor/patient of the incoming call via WebSocket
