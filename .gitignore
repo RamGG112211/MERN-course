@@ -1,2 +1,4 @@
 node_modules/
 MERN-TASKS
+/.env
+**/.env
