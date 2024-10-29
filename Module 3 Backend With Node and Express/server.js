@@ -8,6 +8,7 @@ import userRoutes from "./routes/users/index.js"; // User routes
 import hospitalRoutes from "./routes/hospitals/index.js"; // Hospital routes
 import bookingRoutes from "./routes/bookings/index.js"; // Booking routes
 import doctorRoutes from "./routes/doctors/index.js"; // Doctor routes
+import paymentRoutes from "./routes/payment/index.js"; // Doctor routes
 import cors from "cors";
 import Twilio from "twilio";
 
@@ -46,6 +47,7 @@ app.use("/users", userRoutes); // User routes
 app.use("/hospitals", hospitalRoutes); // Hospital routes
 app.use("/bookings", bookingRoutes); // Booking routes
 app.use("/doctors", doctorRoutes); // Doctor routes
+app.use("/payment", paymentRoutes); // Doctor routes
 
 // Start the server after DB connection
 connectDB().then(() => {

@@ -1203,3 +1203,239 @@ npm install react-toastify
       npm install twilio-video socket.io-client react-icons
 
 ```
+
+### payment integration khalti
+
+### Create the KhaltiPayment.jsx
+```bash
+import React, { useState } from "react";
+import axios from "axios";
+
+const KhaltiPaymentForm = () => {
+    const [phone, setPhone] = useState("");
+    const [mpin, setMpin] = useState("");
+    const [otp, setOtp] = useState("");
+    const [amount, setAmount] = useState("");
+    const [showOtpField, setShowOtpField] = useState(false);
+    const [showAmountField, setShowAmountField] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    // Handle the form submission
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!phone || !mpin) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        setShowOtpField(true);
+        setShowAmountField(true);
+    };
+
+    const handlePayment = async () => {
+        setLoading(true);
+
+        const paymentData = {
+            amount: amount,
+            purchase_order_id: "Order01",
+            purchase_order_name: "Test Order",
+            customer_info: {
+                name: "Ram Bahadur",
+                email: "test@khalti.com",
+                phone: phone,
+            },
+        };
+
+        try {
+            const response = await axios.post("http://localhost:5000/api/payment", paymentData);
+
+            // Redirect based on success/failure
+            if (response.data.status === "success") {
+                window.location.href = "/success";
+            } else {
+                window.location.href = "/failure";
+            }
+        } catch (error) {
+            console.error("Payment failed:", error);
+            window.location.href = "/failure";
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
+                <h2 className="text-2xl font-bold text-center text-blue-500">Khalti Payment</h2>
+                
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Phone Number Field */}
+                    <div>
+                        <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-700">Phone Number</label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-400"
+                            placeholder="Enter your phone number"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            required
+                        />
+                    </div>
+                    
+                    {/* MPIN Field */}
+                    <div>
+                        <label htmlFor="mpin" className="block mb-2 text-sm font-medium text-gray-700">MPIN Code</label>
+                        <input
+                            type="password"
+                            id="mpin"
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-400"
+                            placeholder="Enter your MPIN code"
+                            value={mpin}
+                            onChange={(e) => setMpin(e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    <button type="submit" className="w-full px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600">
+                        Submit
+                    </button>
+                </form>
+
+                {/* OTP Field - shown after initial form submission */}
+                {showOtpField && (
+                    <div>
+                        <label htmlFor="otp" className="block mb-2 text-sm font-medium text-gray-700">OTP</label>
+                        <input
+                            type="text"
+                            id="otp"
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-400"
+                            placeholder="Enter OTP"
+                            value={otp}
+                            onChange={(e) => setOtp(e.target.value)}
+                        />
+                    </div>
+                )}
+
+                {/* Amount Field - shown after initial form submission */}
+                {showAmountField && (
+                    <div>
+                        <label htmlFor="amount" className="block mb-2 text-sm font-medium text-gray-700">Amount</label>
+                        <input
+                            type="number"
+                            id="amount"
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-400"
+                            placeholder="Enter amount to pay"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            required
+                        />
+                    </div>
+                )}
+
+                {/* Pay Button */}
+                {showAmountField && (
+                    <button
+                        onClick={handlePayment}
+                        className="w-full px-4 py-2 font-semibold text-white bg-green-500 rounded-md hover:bg-green-600"
+                        disabled={loading}
+                    >
+                        {loading ? "Processing..." : `Pay Rs. ${amount}`}
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default KhaltiPaymentForm;
+
+```
+
+### Success page
+```bash
+import React from 'react';
+
+const Success = () => {
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-green-100">
+            <h1 className="text-3xl font-bold text-green-700">Payment Successful!</h1>
+        </div>
+    );
+};
+
+export default Success;
+
+```
+
+
+### failure page
+```bash
+import React from 'react';
+
+const Failure = () => {
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-red-100">
+            <h1 className="text-3xl font-bold text-red-700">Payment Failed. Please try again.</h1>
+        </div>
+    );
+};
+
+export default Failure;
+
+```
+
+### routing
+
+```bash
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import KhaltiPaymentForm from './KhaltiPaymentForm';
+import Success from './Success';
+import Failure from './Failure';
+
+function App() {
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<KhaltiPaymentForm />} />
+                <Route path="/success" element={<Success />} />
+                <Route path="/failure" element={<Failure />} />
+            </Routes>
+        </Router>
+    );
+}
+
+export default App;
+
+```
+
+### backend khalti
+
+```bash
+const initiateKhaltiPayment = async (req, res) => {
+    const { amount, purchase_order_id, purchase_order_name, customer_info } = req.body;
+
+    try {
+        const response = await axios.post("https://a.khalti.com/api/v2/epayment/initiate/", {
+            return_url: "http://example.com/",    // Redirect after payment completion
+            website_url: "https://example.com/",  // Website URL for your business
+            amount: amount,
+            purchase_order_id: purchase_order_id,
+            purchase_order_name: purchase_order_name,
+            customer_info: customer_info,
+        }, {
+            headers: {
+                Authorization: "key live_secret_key_68791341fdd94846a146f0457ff7b455", // Replace with your actual key
+                "Content-Type": "application/json",
+            }
+        });
+
+        return res.json(response.data);
+    } catch (error) {
+        // Send error response
+        return res.status(500).json({
+            error: error.response?.data || error.message,
+        });
+    }
+```

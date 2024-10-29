@@ -12,6 +12,9 @@ import SignupPage from "./pages/auth/SignupPage";
 import LoginPage from "./pages/auth/LoginPage";
 import DoctorSignupPage from "./pages/auth/DoctorSignupPage";
 import HospitalSignupPage from "./pages/auth/HospitalSignupPage";
+import Success from "./components/payment/Success";
+import Failure from "./components/payment/Failure";
+import PaymentForm from "./components/payment/PaymentForm";
 
 function App() {
   return (
@@ -30,6 +33,10 @@ function App() {
           <Route path="/hospitals" element={<Hospitals />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/booking/:id" element={<DoctorBooking />} />
+
+          <Route path="/payment" element={<PaymentForm />} />
+          <Route path="/success" element={<Success />} />
+          <Route path="/failure" element={<Failure />} />
 
           {/* <Route path="admin">
             <Route index element={<AdminDashboard />} />
