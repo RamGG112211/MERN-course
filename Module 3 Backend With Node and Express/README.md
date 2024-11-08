@@ -1278,10 +1278,113 @@ app.use('/uploads', express.static('uploads'));
 
 ```
 
-
 ### Video call integration
 
 ### 1. install packages
+
 ```bash
-    npm install express twilio dotenv ws
+    npm install socket.io
+```
+
+### 2. server.js
+
+```bash
+
+// Start the server after DB connection
+connectDB().then(() => {
+  const server = http.createServer(app);
+
+  const websocketServer = new WebSocketServer({
+    noServer: true,
+    path: "/websockets",
+  });
+
+  server.on("upgrade", (request, socket, head) => {
+    websocketServer.handleUpgrade(request, socket, head, (ws) => {
+      websocketServer.emit("connection", ws, request);
+    });
+  });
+
+  websocketServer.on("connection", (ws) => {
+    console.log("Client connected");
+
+    ws.on("message", async (message) => {
+      const data = JSON.parse(message);
+
+      if (data.type === "register") {
+        clients[data.userId] = ws; // Register the client
+        console.log(`User registered: ${data.userId}`);
+      }
+
+      if (data.type === "appointment-call") {
+        const { userId, doctorId } = data;
+
+        // Find the booking by userId and doctorId
+        const booking = await Booking.findOne({
+          user_id: userId,
+          doctor_id: doctorId,
+        }).exec();
+
+        if (booking) {
+          const bookingId = booking._id.toString();
+
+          // Send booking ID to both user and doctor
+          if (clients[userId])
+            clients[userId].send(
+              JSON.stringify({ type: "appointment-call-incoming", bookingId })
+            );
+          if (clients[doctorId])
+            clients[doctorId].send(
+              JSON.stringify({ type: "appointment-call-incoming", bookingId })
+            );
+        } else {
+          console.log("Booking not found");
+        }
+      }
+    });
+
+    ws.on("close", () => {
+      // Clean up client disconnects if necessary
+      console.log("Client disconnected");
+    });
+  });
+
+  server.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+  });
+});
+
+```
+
+### 3. controllers/booking/index.js
+
+```bash
+// Get a booking by userId and doctorId
+export const getBookingByUserAndDoctor = async (req, res) => {
+  const { userId, doctorId } = req.query; // Use req.params if you define them in URL
+
+  try {
+    const booking = await Booking.findOne({
+      user_id: userId,
+      doctor_id: doctorId,
+    })
+      .populate("user_id")
+      .populate("doctor_id");
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    res.status(200).json({ booking });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+```
+
+### 4. routes/booking/index.js
+
+```bash
+router.get("/booking", getBookingByUserAndDoctor); // Using query parameters
+
 ```

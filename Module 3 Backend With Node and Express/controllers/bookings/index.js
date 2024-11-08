@@ -4,6 +4,9 @@ import User from "../../models/users/index.js"; // User model
 import twilio from "twilio";
 import { clients } from "../../server.js";
 import dotenv from "dotenv";
+import axios from "axios";
+import crypto from "crypto";
+import { callKhalti } from "../payment/index.js";
 
 dotenv.config();
 
@@ -19,7 +22,8 @@ const VideoGrant = AccessToken.VideoGrant;
 
 // Create a new booking
 export const createBooking = async (req, res) => {
-  const { user_id, doctor_id, appointmentDate } = req.body;
+  const { user_id, doctor_id, appointmentDate, amount, payment_method } =
+    req.body;
 
   try {
     // Check if the user and doctor exist
@@ -41,10 +45,58 @@ export const createBooking = async (req, res) => {
     });
     const savedBooking = await newBooking.save();
 
-    res.status(201).json({ message: "Booking created", booking: savedBooking });
+    const signature = createSignature(
+      `total_amount=${amount},transaction_uuid=${savedBooking._id},product_code=EPAYTEST`
+    );
+
+    if (payment_method === "esewa") {
+      const formData = {
+        amount: amount,
+        failure_url: "http://localhost:5173/failure",
+        product_delivery_charge: "0",
+        product_service_charge: "0",
+        product_code: "EPAYTEST",
+        signature: signature,
+        signed_field_names: "total_amount,transaction_uuid,product_code",
+        success_url: "http://localhost:3001/payment/esewa-success",
+        tax_amount: "0",
+        total_amount: amount,
+        transaction_uuid: savedBooking._id,
+      };
+      res.json({
+        message: "Booking done Sucessfully",
+        payment_method: "esewa",
+        formData,
+      });
+    } else if (payment_method === "khalti") {
+      const formData = {
+        return_url: "http://localhost:3001/payment/khalti-callback",
+        website_url: "http://localhost:3001",
+        amount: amount * 100, //paisa
+        purchase_order_id: savedBooking._id,
+        purchase_order_name: "test",
+      };
+
+      await callKhalti(formData, req, res);
+    }
+
+    // return res
+    //   .status(201)
+    //   .json({ message: "Booking created", booking: savedBooking });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
+};
+
+const createSignature = (message) => {
+  const secret = "8gBm/:&EnhH.1/q";
+  // Create an HMAC-SHA256 hash
+  const hmac = crypto.createHmac("sha256", secret);
+  hmac.update(message);
+
+  // Get the digest in base64 format
+  const hashInBase64 = hmac.digest("base64");
+  return hashInBase64;
 };
 
 // Update a booking
@@ -222,5 +274,27 @@ export const videoCall = async (req, res) => {
   } catch (error) {
     console.error("Error in video call:", error);
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Get a booking by userId and doctorId
+export const getBookingByUserAndDoctor = async (req, res) => {
+  const { userId, doctorId } = req.query; // Use req.params if you define them in URL
+
+  try {
+    const booking = await Booking.findOne({
+      user_id: userId,
+      doctor_id: doctorId,
+    })
+      .populate("user_id")
+      .populate("doctor_id");
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    res.status(200).json({ booking });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

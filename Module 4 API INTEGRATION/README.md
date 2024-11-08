@@ -1195,10 +1195,10 @@ npm install react-toastify
         <Route path="/doctor/:id" element={<DoctorBooking />} />
 ```
 
-
 ### Video call integration
 
 ### 1. install packages
+
 ```bash
       npm install twilio-video socket.io-client react-icons
 
@@ -1207,6 +1207,7 @@ npm install react-toastify
 ### payment integration khalti
 
 ### Create the KhaltiPayment.jsx
+
 ```bash
 import React, { useState } from "react";
 import axios from "axios";
@@ -1268,7 +1269,7 @@ const KhaltiPaymentForm = () => {
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
                 <h2 className="text-2xl font-bold text-center text-blue-500">Khalti Payment</h2>
-                
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Phone Number Field */}
                     <div>
@@ -1283,7 +1284,7 @@ const KhaltiPaymentForm = () => {
                             required
                         />
                     </div>
-                    
+
                     {/* MPIN Field */}
                     <div>
                         <label htmlFor="mpin" className="block mb-2 text-sm font-medium text-gray-700">MPIN Code</label>
@@ -1354,6 +1355,7 @@ export default KhaltiPaymentForm;
 ```
 
 ### Success page
+
 ```bash
 import React from 'react';
 
@@ -1369,8 +1371,8 @@ export default Success;
 
 ```
 
-
 ### failure page
+
 ```bash
 import React from 'react';
 
@@ -1438,4 +1440,234 @@ const initiateKhaltiPayment = async (req, res) => {
             error: error.response?.data || error.message,
         });
     }
+```
+
+# Video call feature implementation
+
+### 1. Add in App.jsx
+
+```bash
+ const socketRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Initialize WebSocket connection
+    socketRef.current = new WebSocket("ws://localhost:3001/websockets");
+
+    // Retrieve the data from localStorage
+    const storedUserData = localStorage.getItem("doctor_portal_user");
+
+    // Parse the JSON data (if it exists) and access the token
+    const userId = storedUserData ? JSON.parse(storedUserData).user._id : null;
+
+    socketRef.current.onopen = () => {
+      console.log("Connected to WebSocket server");
+
+      socketRef.current.send(JSON.stringify({ type: "register", userId }));
+    };
+
+    // Listen for incoming appointment calls
+    socketRef.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "appointment-call-incoming") {
+        const { bookingId } = data;
+        console.log(`Incoming appointment call, booking ID: ${bookingId}`);
+
+        // Handle the incoming call (e.g., show notification or modal)
+        navigate(`/room/${bookingId}`);
+      }
+    };
+
+    socketRef.current.onclose = () => {
+      console.log("Disconnected from WebSocket server");
+    };
+
+    return () => {
+      // Cleanup WebSocket on component unmount
+      if (socketRef.current) {
+        socketRef.current.close();
+      }
+    };
+  }, []);
+```
+
+### 2. VideoCallButton.jsx
+
+```bash
+/* eslint-disable react/prop-types */
+// import { useNavigate } from "react-router-dom";
+import { apiRequest } from "../../utils/auth/apiRequest";
+import { useDispatch } from "react-redux";
+import {
+  updateRoomJoinToken,
+  updateRoomName,
+} from "../../store/videoCallSlice";
+import { useEffect, useRef } from "react";
+
+const VideoCallButton = () => {
+  // const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const storedUserData = localStorage.getItem("doctor_portal_user");
+  // const identity = storedUserData
+  //   ? JSON.parse(storedUserData).user.fullName
+  //   : null;
+
+  const doctorId = "671e4b19e3e24a32cde80ff6";
+  const patientId = storedUserData ? JSON.parse(storedUserData).user._id : null;
+  const accessToken = storedUserData ? JSON.parse(storedUserData).token : null;
+
+  const socketRef = useRef(null);
+
+  useEffect(() => {
+    // Initialize WebSocket connection
+    socketRef.current = new WebSocket("ws://localhost:3001/websockets");
+
+    // Retrieve the data from localStorage
+    const storedUserData = localStorage.getItem("doctor_portal_user");
+
+    // Parse the JSON data (if it exists) and access the token
+    const userId = storedUserData ? JSON.parse(storedUserData).user._id : null;
+
+    socketRef.current.onopen = () => {
+      console.log("Connected to WebSocket server");
+
+      socketRef.current.send(JSON.stringify({ type: "register", userId }));
+    };
+  }, []);
+
+  const handleAppointmentCall = () => {
+    // Emit appointment-call event to initiate call
+    // Retrieve the data from localStorage
+    const storedUserData = localStorage.getItem("doctor_portal_user");
+
+    // Parse the JSON data (if it exists) and access the token
+    const userId = storedUserData ? JSON.parse(storedUserData).user._id : null;
+
+    const doctorId = "671e4b19e3e24a32cde80ff6"; // Replace with actual doctorId
+    socketRef.current.send(
+      JSON.stringify({ type: "appointment-call", userId, doctorId })
+    );
+  };
+
+  return (
+    <button
+      className="bg-blue-500 text-white p-2 rounded"
+      onClick={handleAppointmentCall}
+    >
+      Start Video Call
+    </button>
+  );
+};
+
+export default VideoCallButton;
+
+```
+
+# Authentication continue...
+
+### 1. authSlice.js
+
+```bash
+import { createSlice } from "@reduxjs/toolkit";
+
+// Define the initial state using that type
+const initialState = {
+  loggedIn: false,
+  user: undefined,// undefined or null or user object
+  loggedInUserRole: undefined,
+};
+
+export const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    userLoggedIn: (state) => {
+      state.loggedIn = true;
+    },
+    userLoggedOut: (state) => {
+      state.loggedIn = false;
+      state.user = null;
+    },
+    updateUser: (state, action) => {
+      const userData = action.payload;
+      state.user = userData;
+    },
+    updateUserLoggedInUserRole: (state, action) => {
+      state.loggedInUserRole = action.payload;
+    },
+  },
+});
+
+export const {
+  userLoggedIn,
+  userLoggedOut,
+  updateRememberMe,
+  updateUser,
+  updateUserLoggedInUserRole,
+} = authSlice.actions;
+
+export default authSlice.reducer;
+
+```
+
+### 2. LoadUserDetails.jsx
+
+```bash
+import React, { useCallback, useEffect } from "react";
+import {
+  updateUser,
+  updateUserLoggedInUserRole,
+  userLoggedIn,
+  userLoggedOut,
+} from "../../store/authSlice";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+export default function LoadUserDetails() {
+  const { user } = useSelector((store) => store.auth);
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
+  // Retrieve stored user data and validate session expiry
+  const getInitialUserState = useCallback(() => {
+    const userData = localStorage.getItem("doctor_portal_user");
+
+    if (userData) {
+      dispatch(updateUser(JSON.parse(userData)));
+    } else {
+      localStorage.removeItem("doctor_portal_user");
+      dispatch(updateUser(null));
+      dispatch(userLoggedOut());
+      dispatch(updateUserLoggedInUserRole(undefined));
+      navigate("/user/login");
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    getInitialUserState();
+
+    if (user) {
+      dispatch(userLoggedIn());
+      dispatch(updateUserLoggedInUserRole(user.role));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(userLoggedIn());
+      dispatch(updateUserLoggedInUserRole(user.role));
+    }
+  }, [user]);
+
+  return (
+    <div className="hidden">
+      This components purpose is just to load the user details if login from
+      google or fb
+    </div>
+  );
+}
+
 ```

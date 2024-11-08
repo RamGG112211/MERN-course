@@ -42,7 +42,9 @@ export default function DoctorFilter({
     (val) => {
       console.log("called city change");
 
-      dispatch(updateCityChosenDoctor(val));
+      // dispatch(updateCityChosenDoctor(val));
+      dispatch(updateCityCho(val));
+
     },
     [dispatch]
   );
@@ -208,6 +210,45 @@ export default function DoctorFilter({
               />
             );
           })}
+
+          {/* {
+      id: 4,
+      icon: <FaCity />,
+      categoryTitle: "City",
+      categoryValue: cityChosen,
+      categoryValues: filterCityOptions,
+      filterFn: filterCity,
+      filterType: "select one",
+      categoryType: "city",
+    }, */}
+
+          {/* <FilterSelect
+            options={filterCityOptions}
+            categoryValue={cityChosen}
+            updateCategoryValue={filterCity}
+            icon={<FaCity />}
+            // key={id}
+            categoryType={"city"}
+            className="w-full md:w-[calc(50%_-_8px)] lg:w-[calc((100%_/_3)_-_(32px_/_3))]"
+          />
+          <FilterSelect
+            options={categoryValues}
+            categoryValue={categoryValue}
+            updateCategoryValue={filterFn}
+            icon={icon}
+            key={id}
+            categoryType={categoryType}
+            className="w-full md:w-[calc(50%_-_8px)] lg:w-[calc((100%_/_3)_-_(32px_/_3))]"
+          />
+          <FilterSelect
+            options={categoryValues}
+            categoryValue={categoryValue}
+            updateCategoryValue={filterFn}
+            icon={icon}
+            key={id}
+            categoryType={categoryType}
+            className="w-full md:w-[calc(50%_-_8px)] lg:w-[calc((100%_/_3)_-_(32px_/_3))]"
+          /> */}
         </div>
       </div>
       {/* 

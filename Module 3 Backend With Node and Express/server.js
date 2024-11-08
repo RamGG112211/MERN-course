@@ -11,6 +11,7 @@ import doctorRoutes from "./routes/doctors/index.js"; // Doctor routes
 import paymentRoutes from "./routes/payment/index.js"; // Doctor routes
 import cors from "cors";
 import Twilio from "twilio";
+import Booking from "./models/bookings/index.js";
 
 // Initialize dotenv
 dotenv.config();
@@ -67,7 +68,7 @@ connectDB().then(() => {
   websocketServer.on("connection", (ws) => {
     console.log("Client connected");
 
-    ws.on("message", (message) => {
+    ws.on("message", async (message) => {
       const data = JSON.parse(message);
 
       if (data.type === "register") {
@@ -75,7 +76,31 @@ connectDB().then(() => {
         console.log(`User registered: ${data.userId}`);
       }
 
-      // Handle other message types as needed
+      if (data.type === "appointment-call") {
+        const { userId, doctorId } = data;
+
+        // Find the booking by userId and doctorId
+        const booking = await Booking.findOne({
+          user_id: userId,
+          doctor_id: doctorId,
+        }).exec();
+
+        if (booking) {
+          const bookingId = booking._id.toString();
+
+          // Send booking ID to both user and doctor
+          if (clients[userId])
+            clients[userId].send(
+              JSON.stringify({ type: "appointment-call-incoming", bookingId })
+            );
+          if (clients[doctorId])
+            clients[doctorId].send(
+              JSON.stringify({ type: "appointment-call-incoming", bookingId })
+            );
+        } else {
+          console.log("Booking not found");
+        }
+      }
     });
 
     ws.on("close", () => {
