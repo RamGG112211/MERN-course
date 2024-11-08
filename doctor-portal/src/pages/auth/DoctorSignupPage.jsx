@@ -2,6 +2,7 @@
 import DoctorSignupForm from "../../components/auth/DoctorSignupForm";
 import { Container } from "@mui/material";
 import { apiRequest } from "../../utils/auth/apiRequest";
+import DoctorSignupForm2 from "../../components/auth/DoctorSignupForm2";
 
 const DoctorSignupPage = () => {
     const onSubmit = async (formData) => {
@@ -52,6 +53,7 @@ const DoctorSignupPage = () => {
       }}
     >
       <DoctorSignupForm onSubmit={onSubmit} />
+      <DoctorSignupForm2 onSubmit={onSubmit} />
     </Container>
   );
 };

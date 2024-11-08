@@ -7,28 +7,21 @@ import {
   Typography,
   TextField,
   Button,
-  Grid2,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  Box,
   Checkbox,
   ListItemText,
+  Grid2,
 } from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
+import * as Yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { apiRequest } from "../../utils/auth/apiRequest";
 
 const DoctorSignupForm = ({ onSubmit }) => {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    specialization: "",
-    qualification: "",
-    experienceYears: "",
-    clinicAddress: "",
-    hospitalIds: [],
-  });
+  const [hospitals, setHospitals] = useState([]);
 
   const specializations = [
     "Cardiology",
@@ -38,8 +31,6 @@ const DoctorSignupForm = ({ onSubmit }) => {
     "Orthopedics",
   ];
 
-  const [hospitals, setHospitals] = useState([]);
-
   useEffect(() => {
     const fetchHospitals = async () => {
       try {
@@ -47,206 +38,278 @@ const DoctorSignupForm = ({ onSubmit }) => {
           method: "GET",
           url: "/hospitals",
         });
-        console.log("response hospitals: ", response);
-
         setHospitals(response); // Assuming the response is an array of hospitals
       } catch (error) {
         console.error("Error fetching hospitals:", error);
       }
     };
-
     fetchHospitals();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "hospitalIds") {
-      console.log("value of hospital id: ", value);
+  // Validation schema with Yup
+  const validationSchema = Yup.object().shape({
+    fullName: Yup.string().required("Full Name is required"),
+    email: Yup.string()
+      .email("Invalid email format")
+      .required("Email is required"),
+    password: Yup.string()
+      .min(6, "Password must be at least 6 characters")
+      .required("Password is required"),
+    specialization: Yup.string().required("Specialization is required"),
+    qualification: Yup.string().required("Qualification is required"),
+    experienceYears: Yup.number()
+      .typeError("Must be a number")
+      .required("Experience Years are required"),
+    clinicAddress: Yup.string().required("Clinic Address is required"),
+    hospitalIds: Yup.array().min(1, "Select at least one hospital"),
+    profileImage: Yup.mixed().required("Profile image is required"),
+    pictures: Yup.array()
+      .min(1, "At least one image is required")
+      .of(Yup.mixed().required("Image is required")),
+  });
 
-      const currentIndex = formData.hospitalIds.indexOf(value[0]);
-      console.log("current index", currentIndex);
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    setValue,
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      specialization: "",
+      qualification: "",
+      experienceYears: "",
+      clinicAddress: "",
+      hospitalIds: [],
+      profileImage: null,
+      pictures: [],
+    },
+  });
 
-      const newHospitalIds = [...value];
-
-      //   if (currentIndex === -1) {
-      //     newHospitalIds.push(...value); // Add hospital ID
-      //   } else {
-      //     newHospitalIds.splice(currentIndex, 1); // Remove hospital ID
-      //   }
-
-      // Update the form data state
-      setFormData((prevData) => ({
-        ...prevData,
-        hospitalIds: newHospitalIds,
-      }));
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
+  const onFormSubmit = (data) => {
+    console.log("Form Data:", data);
+    onSubmit(data);
   };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
-
-  useEffect(() => {
-    console.log("form data: ", formData);
-  }, [formData]);
 
   return (
     <Grid2 container justifyContent="center" alignItems="center">
       <Grid2 item xs={12} sm={8} md={6} lg={4} maxWidth="sm">
         <Card variant="outlined">
           <CardContent>
-            <Box className="text-2xl font-bold mb-6 text-center text-gray-700">
-              <Typography
-                variant="h5"
-                component="h2"
-                align="center"
-                gutterBottom
-                sx={{
-                  fontSize: "2rem",
-                  fontWeight: "bold",
-                  color: "gray.700",
-                  marginBottom: "1.5rem",
-                }} // MUI's sx prop for styling
-              >
-                Doctor Signup
-              </Typography>
-            </Box>
-            <form
-              onSubmit={handleSubmit}
-              noValidate
-              autoComplete="off"
-              encType="multipart/form-data"
+            <Typography
+              variant="h5"
+              component="h2"
+              align="center"
+              gutterBottom
+              sx={{
+                fontSize: "2rem",
+                fontWeight: "bold",
+                color: "gray.700",
+                marginBottom: "1.5rem",
+              }}
             >
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                label="Full Name"
+              Doctor Signup
+            </Typography>
+            <form onSubmit={handleSubmit(onFormSubmit)} noValidate>
+              <Controller
                 name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Full Name"
+                    error={!!errors.fullName}
+                    helperText={errors.fullName?.message}
+                  />
+                )}
               />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                label="Email"
+
+              <Controller
                 name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Email"
+                    type="email"
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
+                  />
+                )}
               />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                label="Password"
+
+              <Controller
                 name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Password"
+                    type="password"
+                    error={!!errors.password}
+                    helperText={errors.password?.message}
+                  />
+                )}
               />
-              <FormControl fullWidth margin="normal" variant="outlined">
+
+              <FormControl
+                fullWidth
+                margin="normal"
+                variant="outlined"
+                error={!!errors.specialization}
+              >
                 <InputLabel>Specialization</InputLabel>
-                <Select
-                  label="Specialization"
+                <Controller
                   name="specialization"
-                  value={formData.specialization}
-                  onChange={handleChange}
-                  required
-                >
-                  {specializations.map((spec) => (
-                    <MenuItem key={spec} value={spec}>
-                      {spec}
-                    </MenuItem>
-                  ))}
-                </Select>
+                  control={control}
+                  render={({ field }) => (
+                    <Select {...field} label="Specialization">
+                      {specializations.map((spec) => (
+                        <MenuItem key={spec} value={spec}>
+                          {spec}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+                <Typography variant="body2" color="error">
+                  {errors.specialization?.message}
+                </Typography>
               </FormControl>
 
-              {/* Hospital Selection */}
-              {hospitals.length > 0 && (
-                <FormControl fullWidth margin="normal" variant="outlined">
-                  <InputLabel>Hospitals</InputLabel>
-                  <Select
-                    label="Hospitals"
-                    name="hospitalIds"
-                    multiple
-                    value={formData.hospitalIds}
-                    onChange={handleChange}
-                    renderValue={(selected) => {
-                      const selectedHospitals = hospitals.filter((hospital) =>
-                        selected.includes(hospital._id)
-                      );
-                      return selectedHospitals
-                        .map((hospital) => hospital.hospitalName)
-                        .join(", ");
-                    }}
-                  >
-                    {hospitals.map((hospital) => (
-                      <MenuItem key={hospital._id} value={hospital._id}>
-                        <Checkbox
-                          checked={
-                            formData.hospitalIds.indexOf(hospital._id) > -1
-                          }
-                        />
-                        <ListItemText primary={hospital.hospitalName} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
+              <FormControl
+                fullWidth
+                margin="normal"
+                variant="outlined"
+                error={!!errors.hospitalIds}
+              >
+                <InputLabel>Hospitals</InputLabel>
+                <Controller
+                  name="hospitalIds"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      multiple
+                      renderValue={(selected) =>
+                        hospitals
+                          .filter((hospital) => selected.includes(hospital._id))
+                          .map((hospital) => hospital.hospitalName)
+                          .join(", ")
+                      }
+                    >
+                      {hospitals.map((hospital) => (
+                        <MenuItem key={hospital._id} value={hospital._id}>
+                          <Checkbox
+                            checked={field.value.includes(hospital._id)}
+                          />
+                          <ListItemText primary={hospital.hospitalName} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+                <Typography variant="body2" color="error">
+                  {errors.hospitalIds?.message}
+                </Typography>
+              </FormControl>
 
-              {/* File Input for Doctor's Profile Image */}
-              <input
-                type="file"
+              <Controller
                 name="profileImage"
-                accept="image/*"
-                onChange={(e) =>
-                  setFormData({ ...formData, profileImage: e.target.files[0] })
-                }
-                required
+                control={control}
+                render={({ field }) => (
+                  <input
+                    type="file"
+                    onChange={(e) => field.onChange(e.target.files[0])}
+                    required
+                  />
+                )}
+              />
+              <Typography variant="body2" color="error">
+                {errors.profileImage?.message}
+              </Typography>
+              
+              <Controller
+                name="pictures"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    type="file"
+                    multiple
+                    onChange={(e) => {
+                      // Convert FileList to an array and set it in the form state
+                      field.onChange(Array.from(e.target.files));
+                    }}
+                    required
+                  />
+                )}
               />
 
-              <TextField
-                fullWidth
-                label="Qualification"
+              <Typography variant="body2" color="error">
+                {errors.pictures?.message}
+              </Typography>
+
+              <Controller
                 name="qualification"
-                value={formData.qualification}
-                onChange={handleChange}
-                margin="normal"
-                variant="outlined"
-                required
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Qualification"
+                    error={!!errors.qualification}
+                    helperText={errors.qualification?.message}
+                  />
+                )}
               />
-              <TextField
-                fullWidth
-                label="Experience Years"
+
+              <Controller
                 name="experienceYears"
-                type="number"
-                value={formData.experienceYears}
-                onChange={handleChange}
-                margin="normal"
-                variant="outlined"
-                required
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Experience Years"
+                    type="number"
+                    error={!!errors.experienceYears}
+                    helperText={errors.experienceYears?.message}
+                  />
+                )}
               />
-              <TextField
-                fullWidth
-                label="Clinic Address"
+
+              <Controller
                 name="clinicAddress"
-                value={formData.clinicAddress}
-                onChange={handleChange}
-                margin="normal"
-                variant="outlined"
-                required
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Clinic Address"
+                    error={!!errors.clinicAddress}
+                    helperText={errors.clinicAddress?.message}
+                  />
+                )}
               />
+
               <Button
                 type="submit"
                 variant="contained"

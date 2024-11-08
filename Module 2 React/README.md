@@ -2538,3 +2538,597 @@ export default function FilteredDoctorsList({
 }
 
 ```
+
+# React hook forms
+
+### 21. DoctorSignupForm2.tsx
+
+```bash
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as Yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { apiRequest } from "../../utils/auth/apiRequest";
+
+const DoctorSignupForm2 = ({ onSubmit }) => {
+  const [hospitals, setHospitals] = useState([
+    { hospitalName: "Hospital1", _id: 1 },
+    { hospitalName: "Hospital2", _id: 2 },
+  ]);
+  const [profilePreview, setProfilePreview] = useState(null);
+  const [picturePreviews, setPicturePreviews] = useState([]);
+  const [selectedHospitals, setSelectedHospitals] = useState([]);
+
+  const specializations = [
+    "Cardiology",
+    "Dermatology",
+    "Neurology",
+    "Pediatrics",
+    "Orthopedics",
+  ];
+
+  const validationSchema = Yup.object().shape({
+    fullName: Yup.string().required("Full Name is required"),
+    email: Yup.string()
+      .email("Invalid email format")
+      .required("Email is required"),
+    password: Yup.string()
+      .min(6, "Password must be at least 6 characters")
+      .required("Password is required"),
+    specialization: Yup.string().required("Specialization is required"),
+    qualification: Yup.string().required("Qualification is required"),
+    experienceYears: Yup.number()
+      .typeError("Must be a number")
+      .required("Experience Years are required"),
+    clinicAddress: Yup.string().required("Clinic Address is required"),
+    hospitalIds: Yup.array().min(1, "Select at least one hospital"),
+    profileImage: Yup.mixed().required("Profile image is required"),
+    pictures: Yup.array()
+      .min(1, "At least one image is required")
+      .of(Yup.mixed().required("Image is required")),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    trigger,
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      specialization: "",
+      qualification: "",
+      experienceYears: "",
+      clinicAddress: "",
+      hospitalIds: [],
+      profileImage: null,
+      pictures: [],
+    },
+  });
+
+  const onFormSubmit = (data) => {
+    data.hospitalIds = selectedHospitals; // Set selected hospitals
+    onSubmit(data);
+  };
+
+  const handleProfileImageChange = (e) => {
+    const file = e.target.files[0];
+    setValue("profileImage", file);
+    setProfilePreview(URL.createObjectURL(file));
+    trigger("profileImage"); // Manually trigger validation
+  };
+
+  const handlePicturesChange = (e) => {
+    const files = Array.from(e.target.files);
+    setValue("pictures", files);
+    setPicturePreviews(files.map((file) => URL.createObjectURL(file)));
+    trigger("pictures"); // Manually trigger validation
+  };
+
+  const handleHospitalSelection = (id) => {
+    setSelectedHospitals((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((hospitalId) => hospitalId !== id)
+        : [...prevSelected, id]
+    );
+    trigger("hospitalIds");
+  };
+
+  useEffect(() => {
+    setValue("hospitalIds", selectedHospitals);
+  }, [selectedHospitals]);
+
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
+        <h2 className="text-2xl font-bold text-center text-gray-700 mb-4">
+          Doctor Signup
+        </h2>
+        <form onSubmit={handleSubmit(onFormSubmit)} noValidate>
+          <input
+            {...register("fullName")}
+            className="w-full p-3 border border-gray-300 rounded mt-2"
+            placeholder="Full Name"
+          />
+          <p className="text-red-500 text-sm">{errors.fullName?.message}</p>
+
+          <input
+            {...register("email")}
+            type="email"
+            className="w-full p-3 border border-gray-300 rounded mt-2"
+            placeholder="Email"
+          />
+          <p className="text-red-500 text-sm">{errors.email?.message}</p>
+
+          <input
+            {...register("password")}
+            type="password"
+            className="w-full p-3 border border-gray-300 rounded mt-2"
+            placeholder="Password"
+          />
+          <p className="text-red-500 text-sm">{errors.password?.message}</p>
+
+          <select
+            {...register("specialization")}
+            className="w-full p-3 border border-gray-300 rounded mt-2"
+          >
+            <option value="">Select Specialization</option>
+            {specializations.map((spec) => (
+              <option key={spec} value={spec}>
+                {spec}
+              </option>
+            ))}
+          </select>
+          <p className="text-red-500 text-sm">
+            {errors.specialization?.message}
+          </p>
+
+          {/* Hospital Selection */}
+          <div className="w-full border border-gray-300 rounded mt-2 p-3">
+            <p className="font-semibold text-gray-700 mb-2">Select Hospitals</p>
+            <div className="flex flex-col gap-2 max-h-40 overflow-y-auto">
+              {hospitals.map((hospital) => (
+                <label
+                  key={hospital._id}
+                  className="flex items-center space-x-2 cursor-pointer"
+                  onClick={() => handleHospitalSelection(hospital._id)}
+                >
+                  <input
+                    type="checkbox"
+                    className="form-checkbox h-5 w-5 text-blue-600"
+                    checked={selectedHospitals.includes(hospital._id)}
+                    onChange={() => handleHospitalSelection(hospital._id)}
+                  />
+                  <span className="text-gray-600">{hospital.hospitalName}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <p className="text-red-500 text-sm">{errors.hospitalIds?.message}</p>
+
+          {/* Profile Image with preview */}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              handleProfileImageChange(e);
+            }}
+          />
+          {profilePreview && (
+            <img
+              src={profilePreview}
+              alt="Profile Preview"
+              className="w-24 h-24 mt-2 rounded"
+            />
+          )}
+          <p className="text-red-500 text-sm">{errors.profileImage?.message}</p>
+
+          {/* Pictures with previews */}
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={(e) => {
+              handlePicturesChange(e);
+            }}
+          />
+          <div className="flex mt-2 space-x-2">
+            {picturePreviews.map((preview, index) => (
+              <img
+                key={index}
+                src={preview}
+                alt={`Preview ${index}`}
+                className="w-16 h-16 rounded"
+              />
+            ))}
+          </div>
+          <p className="text-red-500 text-sm">{errors.pictures?.message}</p>
+
+          {/* Qualification */}
+          <input
+            {...register("qualification")}
+            className="w-full p-3 border border-gray-300 rounded mt-2"
+            placeholder="Qualification"
+          />
+          <p className="text-red-500 text-sm">
+            {errors.qualification?.message}
+          </p>
+
+          {/* Experience Years */}
+          <input
+            {...register("experienceYears")}
+            type="number"
+            className="w-full p-3 border border-gray-300 rounded mt-2"
+            placeholder="Experience Years"
+          />
+          <p className="text-red-500 text-sm">
+            {errors.experienceYears?.message}
+          </p>
+
+          {/* Clinic Address */}
+          <input
+            {...register("clinicAddress")}
+            className="w-full p-3 border border-gray-300 rounded mt-2"
+            placeholder="Clinic Address"
+          />
+          <p className="text-red-500 text-sm">
+            {errors.clinicAddress?.message}
+          </p>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white p-3 rounded mt-4"
+          >
+            Sign Up
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default DoctorSignupForm2;
+
+```
+
+### 22. DoctorSignupForm.tsx
+
+```bash
+
+/* eslint-disable react/prop-types */
+// src/components/auth/DoctorSignupForm.jsx
+import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  Grid2,
+} from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
+import * as Yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { apiRequest } from "../../utils/auth/apiRequest";
+
+const DoctorSignupForm = ({ onSubmit }) => {
+  const [hospitals, setHospitals] = useState([]);
+
+  const specializations = [
+    "Cardiology",
+    "Dermatology",
+    "Neurology",
+    "Pediatrics",
+    "Orthopedics",
+  ];
+
+  useEffect(() => {
+    const fetchHospitals = async () => {
+      try {
+        const response = await apiRequest({
+          method: "GET",
+          url: "/hospitals",
+        });
+        setHospitals(response); // Assuming the response is an array of hospitals
+      } catch (error) {
+        console.error("Error fetching hospitals:", error);
+      }
+    };
+    fetchHospitals();
+  }, []);
+
+  // Validation schema with Yup
+  const validationSchema = Yup.object().shape({
+    fullName: Yup.string().required("Full Name is required"),
+    email: Yup.string()
+      .email("Invalid email format")
+      .required("Email is required"),
+    password: Yup.string()
+      .min(6, "Password must be at least 6 characters")
+      .required("Password is required"),
+    specialization: Yup.string().required("Specialization is required"),
+    qualification: Yup.string().required("Qualification is required"),
+    experienceYears: Yup.number()
+      .typeError("Must be a number")
+      .required("Experience Years are required"),
+    clinicAddress: Yup.string().required("Clinic Address is required"),
+    hospitalIds: Yup.array().min(1, "Select at least one hospital"),
+    profileImage: Yup.mixed().required("Profile image is required"),
+    pictures: Yup.array()
+      .min(1, "At least one image is required")
+      .of(Yup.mixed().required("Image is required")),
+  });
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    setValue,
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      specialization: "",
+      qualification: "",
+      experienceYears: "",
+      clinicAddress: "",
+      hospitalIds: [],
+      profileImage: null,
+      pictures: [],
+    },
+  });
+
+  const onFormSubmit = (data) => {
+    console.log("Form Data:", data);
+    onSubmit(data);
+  };
+
+  return (
+    <Grid2 container justifyContent="center" alignItems="center">
+      <Grid2 item xs={12} sm={8} md={6} lg={4} maxWidth="sm">
+        <Card variant="outlined">
+          <CardContent>
+            <Typography
+              variant="h5"
+              component="h2"
+              align="center"
+              gutterBottom
+              sx={{
+                fontSize: "2rem",
+                fontWeight: "bold",
+                color: "gray.700",
+                marginBottom: "1.5rem",
+              }}
+            >
+              Doctor Signup
+            </Typography>
+            <form onSubmit={handleSubmit(onFormSubmit)} noValidate>
+              <Controller
+                name="fullName"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Full Name"
+                    error={!!errors.fullName}
+                    helperText={errors.fullName?.message}
+                  />
+                )}
+              />
+
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Email"
+                    type="email"
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
+                  />
+                )}
+              />
+
+              <Controller
+                name="password"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Password"
+                    type="password"
+                    error={!!errors.password}
+                    helperText={errors.password?.message}
+                  />
+                )}
+              />
+
+              <FormControl
+                fullWidth
+                margin="normal"
+                variant="outlined"
+                error={!!errors.specialization}
+              >
+                <InputLabel>Specialization</InputLabel>
+                <Controller
+                  name="specialization"
+                  control={control}
+                  render={({ field }) => (
+                    <Select {...field} label="Specialization">
+                      {specializations.map((spec) => (
+                        <MenuItem key={spec} value={spec}>
+                          {spec}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+                <Typography variant="body2" color="error">
+                  {errors.specialization?.message}
+                </Typography>
+              </FormControl>
+
+              <FormControl
+                fullWidth
+                margin="normal"
+                variant="outlined"
+                error={!!errors.hospitalIds}
+              >
+                <InputLabel>Hospitals</InputLabel>
+                <Controller
+                  name="hospitalIds"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      multiple
+                      renderValue={(selected) =>
+                        hospitals
+                          .filter((hospital) => selected.includes(hospital._id))
+                          .map((hospital) => hospital.hospitalName)
+                          .join(", ")
+                      }
+                    >
+                      {hospitals.map((hospital) => (
+                        <MenuItem key={hospital._id} value={hospital._id}>
+                          <Checkbox
+                            checked={field.value.includes(hospital._id)}
+                          />
+                          <ListItemText primary={hospital.hospitalName} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+                <Typography variant="body2" color="error">
+                  {errors.hospitalIds?.message}
+                </Typography>
+              </FormControl>
+
+              <Controller
+                name="profileImage"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    type="file"
+                    onChange={(e) => field.onChange(e.target.files[0])}
+                    required
+                  />
+                )}
+              />
+              <Typography variant="body2" color="error">
+                {errors.profileImage?.message}
+              </Typography>
+
+              <Controller
+                name="pictures"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    type="file"
+                    multiple
+                    onChange={(e) => {
+                      // Convert FileList to an array and set it in the form state
+                      field.onChange(Array.from(e.target.files));
+                    }}
+                    required
+                  />
+                )}
+              />
+
+              <Typography variant="body2" color="error">
+                {errors.pictures?.message}
+              </Typography>
+
+              <Controller
+                name="qualification"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Qualification"
+                    error={!!errors.qualification}
+                    helperText={errors.qualification?.message}
+                  />
+                )}
+              />
+
+              <Controller
+                name="experienceYears"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Experience Years"
+                    type="number"
+                    error={!!errors.experienceYears}
+                    helperText={errors.experienceYears?.message}
+                  />
+                )}
+              />
+
+              <Controller
+                name="clinicAddress"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Clinic Address"
+                    error={!!errors.clinicAddress}
+                    helperText={errors.clinicAddress?.message}
+                  />
+                )}
+              />
+
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                style={{ marginTop: "16px" }}
+              >
+                Sign Up
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </Grid2>
+    </Grid2>
+  );
+};
+
+export default DoctorSignupForm;
+
+```
