@@ -2,6 +2,7 @@ import User from "../../models/users/index.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Doctor from "../../models/doctors/index.js";
+import nodemailer from "nodemailer";
 
 export const signup = async (req, res, next) => {
   const { fullName, email, password } = req.body;
@@ -188,10 +189,6 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
-import User from "../models/User.js";
-
 export const sendOtp = async (req, res) => {
   const { email } = req.body;
 
@@ -286,8 +283,6 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
-import bcrypt from "bcrypt";
-
 export const resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
 
@@ -312,5 +307,3 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
-
