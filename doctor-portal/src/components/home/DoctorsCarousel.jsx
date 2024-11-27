@@ -9,6 +9,7 @@ import Loading from "../global/Loading";
 import DoctorCard from "../doctors/DoctorCard";
 import { doctors_data } from "../../utils/data";
 import Wrapper from "../global/Wrapper";
+import { apiRequest } from "../../utils/auth/apiRequest";
 
 // Custom Arrow Components
 const NextArrow = ({ onClick }) => (
@@ -73,16 +74,17 @@ const DoctorsCarousel = () => {
     ],
   };
 
-  const [doctors, setDoctors] = useState(doctors_data);
+  const [doctors, setDoctors] = useState([]);
 
   const fetchDoctors = async () => {
     try {
-      //   const res = await apiRequest({
-      //     url: "/doctors",
-      //     method: "GET",
-      //   });
-      // console.log(res);
-      //   setDoctors(res.data);
+      const res = await apiRequest({
+        url: "/doctors",
+        method: "GET",
+      });
+      console.log(res);
+      
+      setDoctors(res);
     } catch (e) {
       console.log(e);
     }
@@ -91,6 +93,10 @@ const DoctorsCarousel = () => {
   useEffect(() => {
     fetchDoctors();
   }, []);
+
+  useEffect(() => {
+    console.log("doctors: ", doctors);
+  }, [doctors]);
 
   return (
     <Wrapper className=" py-8 pb-20 mt-20">
@@ -109,16 +115,17 @@ const DoctorsCarousel = () => {
       </div>
       <div className="flex sm:flex-row flex-col gap-4 sm:gap-8 justify-center"></div>
 
-      {doctors.length <= 0 ? (
+      {doctors && doctors.length <= 0 ? (
         <div className="py-10">
           <Loading />
         </div>
       ) : (
         <Slider {...settings} className="">
-          {doctors.slice(0, 6).map((doctor) => {
-            const { id } = doctor;
-            return <DoctorCard key={id} doctor={doctor} />;
-          })}
+          {doctors &&
+            doctors.slice(0, 6).map((doctor) => {
+              const { _id } = doctor;
+              return <DoctorCard key={_id} doctor={doctor} />;
+            })}
         </Slider>
       )}
 

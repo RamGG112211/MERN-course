@@ -22,7 +22,7 @@ const doctorSchema = new mongoose.Schema(
     clinicAddress: {
       type: String,
     },
-    profile: {
+    profileImage: {
       type: String,
     },
   },

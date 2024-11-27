@@ -58,7 +58,7 @@ export const createBooking = async (req, res) => {
         product_code: "EPAYTEST",
         signature: signature,
         signed_field_names: "total_amount,transaction_uuid,product_code",
-        success_url: "http://localhost:3001/payment/esewa-success",
+        success_url: "http://localhost:3000/payment/esewa-success",
         tax_amount: "0",
         total_amount: amount,
         transaction_uuid: savedBooking._id,
@@ -70,8 +70,8 @@ export const createBooking = async (req, res) => {
       });
     } else if (payment_method === "khalti") {
       const formData = {
-        return_url: "http://localhost:3001/payment/khalti-callback",
-        website_url: "http://localhost:3001",
+        return_url: "http://localhost:3000/payment/khalti-callback",
+        website_url: "http://localhost:3000",
         amount: amount * 100, //paisa
         purchase_order_id: savedBooking._id,
         purchase_order_name: "test",

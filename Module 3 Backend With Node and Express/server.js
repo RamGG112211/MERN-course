@@ -19,7 +19,7 @@ dotenv.config();
 // Enable CORS for all routes
 
 const app = express();
-const port = process.env.PORT || 3001; // Use environment variable for PORT, fallback to 3001
+const port = process.env.PORT || 3000; // Use environment variable for PORT, fallback to 3001
 app.use(cors());
 
 // const twilioClient = new Twilio(

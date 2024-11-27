@@ -73,11 +73,20 @@ export const handleKhaltiCallback = async (req, res, next) => {
       return res.status(400).json({ error: "Payment not completed" });
     }
 
+    const booking = await Booking.findById(purchase_order_id);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    booking.status = "Confirmed";
+    await booking.save();
+
     console.log(purchase_order_id, pidx);
     req.transaction_uuid = purchase_order_id;
     req.transaction_code = pidx;
     // next();
-    return res.redirect("http://localhost:5173");
+    return res.redirect("http://localhost:5173/success");
   } catch (err) {
     console.log(err);
     return res
@@ -99,11 +108,21 @@ export const createSignature = (message) => {
 
 export const handleEsewaSuccess = async (req, res, next) => {
   try {
-    const { data } = req.query;
+    const { data, transaction_uuid } = req.query;
     const decodedData = JSON.parse(
       Buffer.from(data, "base64").toString("utf-8")
     );
     console.log(decodedData);
+
+    // Find the booking and update status to "Confirmed"
+    const booking = await Booking.findById(transaction_uuid);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    booking.status = "Confirmed";
+    await booking.save();
 
     if (decodedData.status !== "COMPLETE") {
       return res.status(400).json({ messgae: "errror" });
@@ -122,7 +141,7 @@ export const handleEsewaSuccess = async (req, res, next) => {
     req.transaction_uuid = decodedData.transaction_uuid;
     req.transaction_code = decodedData.transaction_code;
     // next();
-    res.redirect("http://localhost:5173");
+    res.redirect("http://localhost:5173/success");
   } catch (err) {
     console.log(err);
     return res.status(400).json({ error: err?.message || "No bookings found" });

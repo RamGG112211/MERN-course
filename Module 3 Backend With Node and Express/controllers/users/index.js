@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Doctor from "../../models/doctors/index.js";
 
-export const signup = async (req, res) => {
+export const signup = async (req, res, next) => {
   const { fullName, email, password } = req.body;
 
   try {
@@ -57,6 +57,13 @@ export const login = async (req, res) => {
 // Create a new user
 export const createUser = async (req, res) => {
   const { fullName, email, password } = req.body;
+
+  // /api/doctors/:id
+  // req.params.id
+  // req.body
+
+  ///api/doctors?name=j438743
+  //req.query.name
 
   try {
     // Check if user already exists
@@ -180,3 +187,130 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
+import User from "../models/User.js";
+
+export const sendOtp = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+    const token = jwt.sign({ email, otp }, process.env.JWT_SECRET, {
+      expiresIn: "5m", // OTP valid for 5 minutes
+    });
+
+    // Send OTP via email
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL, // Your email
+        pass: process.env.EMAIL_PASSWORD, // Your email password
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: "Your OTP Code",
+      text: `Your OTP code is ${otp}. It is valid for 5 minutes.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "OTP sent to email", token });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const verifyOtp = (req, res) => {
+  const { token, otp } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (decoded.otp !== otp)
+      return res.status(400).json({ message: "Invalid OTP" });
+
+    res.status(200).json({ message: "OTP verified successfully" });
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      return res.status(400).json({ message: "OTP expired" });
+    }
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Generate reset token
+    const resetToken = jwt.sign({ email }, process.env.JWT_SECRET, {
+      expiresIn: "1d", // Token valid for 1 day
+    });
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const resetLink = `${req.protocol}://${req.get(
+      "host"
+    )}/reset-password/${resetToken}`;
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: "Password Reset Request",
+      text: `You requested to reset your password. Use the following link: ${resetLink}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "Password reset link sent to email" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+import bcrypt from "bcrypt";
+
+export const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findOne({ email: decoded.email });
+    if (!user)
+      return res
+        .status(404)
+        .json({ message: "User not found or invalid token" });
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      return res.status(400).json({ message: "Reset link expired" });
+    }
+    res.status(500).json({ message: err.message });
+  }
+};
+
+

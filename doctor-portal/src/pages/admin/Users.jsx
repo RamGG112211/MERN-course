@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { apiRequest } from "../../utils/auth/apiRequest";
 import {
   Table,
@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import SignupForm from "../../components/auth/SignupForm";
+import { useSelector } from "react-redux";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -24,28 +25,29 @@ const Users = () => {
   const [openFormModal, setOpenFormModal] = useState(false);
   const [openAddUserModal, setOpenAddUserModal] = useState(false); // New modal state
   const [openViewModal, setOpenViewModal] = useState(false);
+  const { user } = useSelector((store) => store.auth);
+
+  const fetchUsers = useCallback(async () => {
+    try {
+      const token = user?.token;
+
+      const response = await apiRequest({
+        method: "GET",
+        url: "/users",
+        token: token,
+      });
+
+      setUsers(response);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  }, [user]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const token = JSON.parse(
-          localStorage.getItem("doctor_portal_user")
-        )?.token;
+    // console.log("user: ", user);
 
-        const response = await apiRequest({
-          method: "GET",
-          url: "/users",
-          token: token,
-        });
-
-        setUsers(response);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
+    if (user) fetchUsers();
+  }, [user]);
 
   const handleDelete = async () => {
     try {

@@ -113,7 +113,7 @@ const DoctorSignupForm = ({ onSubmit }) => {
             >
               Doctor Signup
             </Typography>
-            <form onSubmit={handleSubmit(onFormSubmit)} noValidate>
+            <form onSubmit={handleSubmit(onFormSubmit)} noValidate >
               <Controller
                 name="fullName"
                 control={control}

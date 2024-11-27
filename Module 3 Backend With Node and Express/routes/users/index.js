@@ -53,17 +53,11 @@ router.patch(
 );
 
 // Delete user
-router.delete(
-  "/:id",
-  authMiddleware(["Admin", "Doctor", "User", "Hospital"]),
-  deleteUser
-);
+router.delete("/:id", authMiddleware(["Admin"]), deleteUser);
 
 // Signup route
 router.post("/signup", signup);
 // Login route
 router.post("/login", login);
-
-
 
 export default router;

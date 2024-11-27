@@ -1,11 +1,16 @@
 /* eslint-disable react/prop-types */
-
 import { Link } from "react-router-dom";
 import Button from "../global/Button";
 
 export default function DoctorCard({ doctor, className }) {
-  const { name, image, location, speciality, rating, consultationFee, id } =
-    doctor;
+  const {
+    clinicAddress,
+    experienceYears,
+    qualification,
+    specialization,
+    user_id,
+  } = doctor;
+  const profile = doctor?.profileImage;
 
   return (
     <div className={`mb-4 ${className}`}>
@@ -13,26 +18,26 @@ export default function DoctorCard({ doctor, className }) {
         <div className="flex items-center p-4">
           <img
             className="w-24 h-24 rounded-full object-cover"
-            src={image}
+            src={profile ? `http://localhost:3000${profile}` : "img"}
             alt={name}
           />
           <div className="ml-4">
-            <h3 className="text-xl font-semibold">{name}</h3>
-            <p className="text-gray-500">{speciality}</p>
+            <h3 className="text-xl font-semibold">{user_id?.fullName}</h3>
+            <p className="text-gray-500">{specialization}</p>
           </div>
         </div>
         <div className="p-4 border-t border-gray-200">
-          <p className="text-gray-600">Location: {location}</p>
+          {/* <p className="text-gray-600">Location: {location}</p> */}
         </div>
         <div className="p-4 border-t border-gray-200 flex justify-between items-center">
           <div>
-            <p className="text-gray-700">Rating: {rating} / 5</p>
+            {/* <p className="text-gray-700">Rating: {rating} / 5</p> */}
           </div>
-          <p className="text-green-600 font-semibold">Fee: {consultationFee}</p>
+          {/* <p className="text-green-600 font-semibold">Fee: {consultationFee}</p> */}
         </div>
 
         <div className=" p-4 pt-0">
-          <Link to={`/booking/${id}`} className="">
+          <Link to={`/booking/${doctor._id}`} className="">
             <Button>Book appointment</Button>
           </Link>
         </div>

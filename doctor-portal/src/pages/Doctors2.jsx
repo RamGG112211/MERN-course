@@ -3,6 +3,8 @@ import AddDoctorModal from "../components/doctors/AddDoctorDialog";
 import DoctorCard2 from "../components/doctors/DoctorCard2";
 import Wrapper from "../components/global/Wrapper";
 import { doctors_data } from "../utils/data";
+import { useDispatch, useSelector } from "react-redux";
+import { updateDoctors } from "../store/doctors2Slice";
 
 export default function Doctors2() {
   // const [doctors, setDoctors] = useState(doctors_data);
@@ -39,28 +41,28 @@ export default function Doctors2() {
      */
   }
 
-  const [doctors, setDoctors] = useState(doctors_data);
+  const { doctors } = useSelector((store) => store.doctors2);
+  const dispatch = useDispatch();
 
   const handleAddDoctor = (newDoctor) => {
     // example newDoctor = {name: "value name", img_url: "/images/alkdjfl.jpg"}
     const duplicateNewDoctor = { ...newDoctor, id: doctors.length + 1 };
-    setDoctors([...doctors, duplicateNewDoctor]);
+    dispatch(updateDoctors([...doctors, duplicateNewDoctor]));
   };
 
   const handleUpdateDoctor = (updatedDoctor) => {
     // updatedDoctor = {id: 1, name: "kjdfalj", image: "/image/"}
     // const doctor = doctors.find((doctor) => doctor.id == updatedDoctor.id);
-    setDoctors((prevDoctors) => {
-      return prevDoctors.map((doctor) =>
-        doctor.id == updatedDoctor.id ? updatedDoctor : doctor
-      );
-    });
+    const newDoctors = doctors.map((doctor) =>
+      doctor.id == updatedDoctor.id ? updatedDoctor : doctor
+    );
+    dispatch(updateDoctors(newDoctors));
   };
 
   const handleDeleteDoctor = (doctorId) => {
-    setDoctors((prevDoctors) => {
-      return prevDoctors.filter((doctor) => doctor.id !== doctorId);
-    });
+    const filteredDoctors = doctors.filter((doctor) => doctor.id !== doctorId);
+
+    dispatch(updateDoctors(filteredDoctors));
   };
 
   return (
