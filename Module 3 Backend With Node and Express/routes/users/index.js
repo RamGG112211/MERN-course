@@ -8,6 +8,10 @@ import {
   deleteUser,
   signup,
   login,
+  sendOtp,
+  verifyOtp,
+  forgotPassword,
+  resetPassword,
 } from "../../controllers/users/index.js"; // Adjust the path based on your project structure
 import { authMiddleware } from "../../middlewares/auth/index.js";
 
@@ -59,5 +63,10 @@ router.delete("/:id", authMiddleware(["Admin"]), deleteUser);
 router.post("/signup", signup);
 // Login route
 router.post("/login", login);
+
+router.post("/send-otp", sendOtp);
+router.post("/verify-otp", verifyOtp);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password", resetPassword);
 
 export default router;

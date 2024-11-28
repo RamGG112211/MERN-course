@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 // src/components/auth/LoginForm.jsx
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const LoginForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -62,6 +63,15 @@ const LoginForm = ({ onSubmit }) => {
             required
           />
         </div>
+
+        <p className="text-center mt-4">
+          <Link
+            to="/forgot-password"
+            className="text-green-500 hover:underline"
+          >
+            Forgot Password?
+          </Link>
+        </p>
 
         <button
           type="submit"

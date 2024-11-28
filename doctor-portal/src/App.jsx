@@ -21,6 +21,8 @@ import { useEffect, useRef, useState } from "react";
 import { apiRequest } from "./utils/auth/apiRequest";
 import AdminLayout from "../../Module 4 API INTEGRATION/api-integration/src/layouts/AdminLayout";
 import Users from "./pages/admin/Users";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -126,6 +128,9 @@ function App() {
         <Route path="/doctors2" element={<Doctors2 />} />
 
         <Route path="/room/:roomid" element={<VideoCall />} />
+
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
         {/* <Route path="admin">
             <Route index element={<AdminDashboard />} />

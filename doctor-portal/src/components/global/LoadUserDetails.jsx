@@ -41,7 +41,12 @@ export default function LoadUserDetails() {
       dispatch(updateUser(null));
       dispatch(userLoggedOut());
       dispatch(updateUserLoggedInUserRole(undefined));
-      if (pathname != "/signup") navigate("/user/login");
+      if (
+        pathname != "/signup" &&
+        !pathname.startsWith("/forgot-password") &&
+        !pathname.startsWith("/reset-password")
+      )
+        navigate("/user/login");
     }
   }, [dispatch, navigate, pathname]);
 
