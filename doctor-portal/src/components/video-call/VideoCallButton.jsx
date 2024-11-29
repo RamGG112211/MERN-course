@@ -7,9 +7,10 @@ import {
   updateRoomName,
 } from "../../store/videoCallSlice";
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const VideoCallButton = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const storedUserData = localStorage.getItem("doctor_portal_user");
@@ -56,7 +57,37 @@ const VideoCallButton = () => {
 
   useEffect(() => {
     // Initialize WebSocket connection
-    socketRef.current = new WebSocket("ws://localhost:3001/websockets");
+    socketRef.current = new WebSocket("ws://localhost:3000/websockets");
+
+    const storedUserData = localStorage.getItem("doctor_portal_user");
+    const userId = storedUserData ? JSON.parse(storedUserData).user._id : null;
+
+    socketRef.current.onopen = () => {
+      console.log("Connected to WebSocket server");
+
+      // Now that the connection is open, send the register message
+      socketRef.current.send(JSON.stringify({ type: "register", userId }));
+    };
+
+    socketRef.current.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    socketRef.current.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+
+    return () => {
+      // Cleanup WebSocket connection on component unmount
+      if (socketRef.current) {
+        socketRef.current.close();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    // Initialize WebSocket connection
+    socketRef.current = new WebSocket("ws://localhost:3000/websockets");
 
     // Retrieve the data from localStorage
     const storedUserData = localStorage.getItem("doctor_portal_user");
@@ -69,6 +100,30 @@ const VideoCallButton = () => {
 
       socketRef.current.send(JSON.stringify({ type: "register", userId }));
     };
+
+    // Listen for incoming appointment calls
+    socketRef.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "appointment-call-incoming") {
+        const { bookingId } = data;
+        console.log(`Incoming appointment call, booking ID: ${bookingId}`);
+
+        // Handle the incoming call (e.g., show notification or modal)
+        navigate(`/room/${bookingId}`);
+      }
+    };
+
+    socketRef.current.onclose = () => {
+      console.log("Disconnected from WebSocket server");
+    };
+
+    return () => {
+      // Cleanup WebSocket on component unmount
+      if (socketRef.current) {
+        socketRef.current.close();
+      }
+    };
   }, []);
 
   const handleAppointmentCall = () => {
@@ -80,9 +135,13 @@ const VideoCallButton = () => {
     const userId = storedUserData ? JSON.parse(storedUserData).user._id : null;
 
     const doctorId = "671e4b19e3e24a32cde80ff6"; // Replace with actual doctorId
-    socketRef.current.send(
-      JSON.stringify({ type: "appointment-call", userId, doctorId })
-    );
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      socketRef.current.send(
+        JSON.stringify({ type: "appointment-call", userId, doctorId })
+      );
+    } else {
+      console.error("WebSocket is not open yet.");
+    }
   };
 
   return (

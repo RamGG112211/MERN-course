@@ -63,7 +63,7 @@ function App() {
 
   useEffect(() => {
     // Initialize WebSocket connection
-    socketRef.current = new WebSocket("ws://localhost:3001/websockets");
+    socketRef.current = new WebSocket("ws://localhost:3000/websockets");
 
     // Retrieve the data from localStorage
     const storedUserData = localStorage.getItem("doctor_portal_user");
