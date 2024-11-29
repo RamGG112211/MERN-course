@@ -106,3 +106,13 @@ export default function Map() {
 ```javascript
 <Route path="/map" element={<Map />} />
 ```
+
+# Api documentations
+
+```bash
+https://www.liedman.net/leaflet-routing-machine/api/#l-routing-control
+```
+
+```bash
+https://react-leaflet.js.org/docs/core-api/
+```
