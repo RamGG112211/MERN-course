@@ -23,6 +23,7 @@ import AdminLayout from "../../Module 4 API INTEGRATION/api-integration/src/layo
 import Users from "./pages/admin/Users";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import Map from "./pages/Map";
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -128,6 +129,7 @@ function App() {
         <Route path="/doctors2" element={<Doctors2 />} />
 
         <Route path="/room/:roomid" element={<VideoCall />} />
+        <Route path="/map" element={<Map />} />
 
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />

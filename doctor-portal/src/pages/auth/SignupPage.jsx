@@ -13,6 +13,9 @@ const SignupPage = () => {
         url: "/users",
         data: formData,
       });
+      // const response 
+
+      // response.token
       console.log("User created:", user);
       navigate("/user/login"); // Redirect to login after successful signup
     } catch (error) {

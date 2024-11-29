@@ -190,7 +190,7 @@ export const deleteUser = async (req, res) => {
 };
 
 export const sendOtp = async (req, res) => {
-  const { email } = req.body;
+  const { email }= req.body;
 
   try {
     const user = await User.findOne({ email });
@@ -226,7 +226,7 @@ export const sendOtp = async (req, res) => {
   }
 };
 
-export const verifyOtp = (req, res) => {
+export const verifyOtp = async (req, res) => {
   const { token, otp } = req.body;
 
   try {
@@ -234,6 +234,13 @@ export const verifyOtp = (req, res) => {
 
     if (decoded.otp !== otp)
       return res.status(400).json({ message: "Invalid OTP" });
+
+    const user = await User.findOne({ email: decoded.email });
+
+    if (user) {
+      user.isVerified = true;
+      await user.save();
+    }
 
     res.status(200).json({ message: "OTP verified successfully" });
   } catch (err) {
